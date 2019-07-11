@@ -1,0 +1,21 @@
+@import "../../common/style/vars";
+
+page{
+  height: 100%;
+}
+
+.loc-deatail{
+  padding: 10rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content:space-around;
+}
+.loc-deatail view{
+  font-size: 28rpx;
+  color: #666666;
+}
+.loc-deatail text{
+  font-size: 40rpx;
+  margin-right: 10rpx;
+}

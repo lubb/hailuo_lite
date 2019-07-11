@@ -1,6 +1,7 @@
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Image, Text, Input, Button  } from '@tarojs/components'
 import { AtToast} from 'taro-ui'
+import ajax from '../../common/js/ajax'
 import './login.scss'
 
 const INIT_STATE = {
@@ -66,7 +67,12 @@ export default class Login extends Component {
   }
 
   userLogin(){
-    Taro.switchTab({url: '/pages/index/index'});
+    let params = 'grant_type=user_token&loginName='+this.state.loginName+'&password='+this.state.password;
+    ajax.postLogin("/oauth/token",params,'application/x-www-form-urlencoded').then(res=>{
+      console.log(res);
+      Taro.switchTab({url: '/pages/index/index'});
+    })
+
   }
 
   render () {

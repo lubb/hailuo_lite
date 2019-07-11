@@ -22,7 +22,8 @@ class App extends Component {
    */
   config: Config = {
     pages: [
-      //'pages/login/login',
+      'pages/login/login',
+      'pages/mine/mine',
       'pages/device/device',
       'pages/order/order',
       'pages/order/detail',
@@ -55,7 +56,7 @@ class App extends Component {
           selectedIconPath: './common/images/device-tap.png'
         },
         {
-          pagePath: 'pages/index/index',
+          pagePath: 'pages/mine/mine',
           text: '我的',
           iconPath: './common/images/mine.png',
           selectedIconPath: './common/images/mine-tap.png'
