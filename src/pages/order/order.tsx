@@ -1,19 +1,8 @@
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Image, Text, Input, Button  } from '@tarojs/components'
-import { AtToast} from 'taro-ui'
-import './login.scss'
+import './order.scss'
 
-const INIT_STATE = {
-  image: '',
-  icon: '',
-  text: '',
-  status: '',
-  duration: 30000,
-  hasMask: false,
-  isOpened: false,
-}
-
-export default class Login extends Component {
+export default class Order extends Component {
 
   /**
    * 指定config的类型声明为: Taro.Config
@@ -23,18 +12,32 @@ export default class Login extends Component {
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
   config: Config = {
-    navigationBarTitleText: '登录'
+    navigationBarTitleText: '订单列表'
   }
 
   constructor () {
     super(...arguments)
     this.state = {
-      loginName : '',
-      password: '',
-      ...INIT_STATE,
-      register:require('../../common/images/mainlogo.png'),
-      telephone:require('../../common/images/img_telephone.png'),
-      code:require('../../common/images/img_code.png'),
+      orderList:[
+        {
+          'name':'湖南海虎建材商贸有限公司',
+          'date':'2019-07-10 12:27:41',
+          'type':'散装',
+          'num':31,
+        },
+        {
+          'name':'湖南海虎建材商贸有限公司',
+          'date':'2019-07-10 12:27:41',
+          'type':'散装',
+          'num':31,
+        },
+        {
+          'name':'湖南海虎建材商贸有限公司',
+          'date':'2019-07-10 12:27:41',
+          'type':'散装',
+          'num':31,
+        }
+      ],
     }
   }
 
@@ -48,64 +51,41 @@ export default class Login extends Component {
 
   componentDidHide () { }
 
-  userNameHandleChange(e){
-    this.setState({loginName:e.detail.value},()=>{console.log(this.state.loginName)})
-  }
-
-  passwordHandleChange(e){
-    this.setState({password:e.detail.value},()=>{console.log(this.state.password)})
-  }
-
-  submitLogin(){
-    if (this.state.loginName === null || this.state.loginName === '' || this.state.loginName === undefined) {
-      return Taro.showToast({title: '请输入账号', icon: 'none', duration: 1000})
-    }else if(this.state.password === null || this.state.password === '' || this.state.password === undefined){
-      return Taro.showToast({title: '请输入密码', icon: 'none', duration: 1000})
-    }
-    this.userLogin()
-  }
-
-  userLogin(){
-    Taro.switchTab({url: '/pages/index/index'});
+  detailOpen(item){
+    let url = '/pages/order/detail';
+    Taro.navigateTo({url: url});
   }
 
   render () {
-    let{register,telephone,code}= this.state
+    const { orderList } = this.state;
     return (
-      <View className='account__page'>
-        <View className='account__bg'>
-          <Image className='account__img' src={register} />
-        </View>
-        <View className='account__content'>
-          <View className='account__tag__tel'>
-            <Image className='account__icon__tel' src={telephone} />
-            <Text className='account__text'>账号</Text>
-          </View>
-          <View className='account__input'>
-            <Input type='text' className='account__userName' onChange={this.userNameHandleChange.bind(this)} placeholder='请输入账号'/>
-          </View>
-          <View className='account__tag__password'>
-            <Image className='account__icon__lock' src={code} />
-            <Text className='account__text'>密码</Text>
-          </View>
-          <View className='account__input'>
-            <Input type='password' className='account__password' onChange={this.passwordHandleChange.bind(this)} placeholder='请输入密码' />
-          </View>
-          <View className='account__log'>
-            <Button className='account__myButton' onClick={this.submitLogin.bind(this)}>登录</Button>
-          </View>
-        </View>
-
-        <AtToast
-          icon={this.state.icon}
-          text={this.state.text}
-          image={this.state.image}
-          status={this.state.status}
-          hasMask={this.state.hasMask}
-          isOpened={this.state.isOpened}
-          duration={this.state.duration}
-          onClose={this.handleToastClose}
-        />
+      <View>
+        {
+          orderList.length > 0 ? (
+            <View className='listWrap'>
+              {
+                orderList.map((item, index) => {
+                  return (
+                    <View className='order_sigle' onClick={this.detailOpen.bind(this, item)}>
+                      <View className='order_one'>客户名称：{item.name}</View>
+                      <View className='order_two'>
+                        <View className='order_two_date'>出厂日期：{item.date}</View>
+                        <View className='order_two_num'>{item.num}顿</View>
+                      </View>
+                      <View className='order_three'>{item.type}</View>
+                    </View>
+                  )
+                })
+              }
+            </View>
+          ) : (
+            <View className='noData'>
+              <View className='noData__text'>
+                <Text>好像什么都 没有</Text>
+              </View>
+            </View>
+          )
+        }
       </View>
     )
   }

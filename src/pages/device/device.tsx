@@ -1,8 +1,8 @@
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Image, Text, Input, Button  } from '@tarojs/components'
-import './order.scss'
+import './device.scss'
 
-export default class Order extends Component {
+export default class Device extends Component {
 
   /**
    * 指定config的类型声明为: Taro.Config
@@ -12,32 +12,28 @@ export default class Order extends Component {
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
   config: Config = {
-    navigationBarTitleText: '订单列表'
+    navigationBarTitleText: '设备状态'
   }
 
   constructor () {
     super(...arguments)
     this.state = {
-      orderList:[
-        {
-          'name':'湖南海虎建材商贸有限公司',
-          'date':'2019-07-10 12:27:41',
-          'type':'散装',
-          'num':31,
-        },
-        {
-          'name':'湖南海虎建材商贸有限公司',
-          'date':'2019-07-10 12:27:41',
-          'type':'散装',
-          'num':31,
-        },
-        {
-          'name':'湖南海虎建材商贸有限公司',
-          'date':'2019-07-10 12:27:41',
-          'type':'散装',
-          'num':31,
+      latitude:'29.580554551939038',
+      longitude:'111.27982597122477',
+      zzMsg:'获取中...',
+      sbztMsg:'获取中...',
+      markers: [{
+        id: 0,
+        iconPath: require("./../../common/images/track.png"),
+        latitude: 29.580554551939038,
+        longitude: '111.27982597122477',
+        title: '安徽中凯信息股份有限公司',
+        callout: {
+          content: '湘J68035' + '\n' + 'GPS状态：离线\n' + '载重传感：载重正常',
+          display: 'ALWAYS',
+          padding: 10
         }
-      ],
+      }]
     }
   }
 
@@ -51,41 +47,20 @@ export default class Order extends Component {
 
   componentDidHide () { }
 
-  detailOpen(item){
-    let url = '/pages/order/detail';
-    Taro.navigateTo({url: url});
-  }
-
   render () {
-    const { orderList } = this.state;
+    const {latitude,longitude,markers,sbztMsg,zzMsg} = this.state;
     return (
-      <View>
-        {
-          orderList.length > 0 ? (
-            <View className='listWrap'>
-              {
-                orderList.map((item, index) => {
-                  return (
-                    <View className='order_sigle' onClick={this.detailOpen.bind(this, item)}>
-                      <View className='order_one'>客户名称：{item.name}</View>
-                      <View className='order_two'>
-                        <View className='order_two_date'>出厂日期：{item.date}</View>
-                        <View className='order_two_num'>{item.num}顿</View>
-                      </View>
-                      <View className='order_three'>{item.type}</View>
-                    </View>
-                  )
-                })
-              }
-            </View>
-          ) : (
-            <View className='noData'>
-              <View className='noData__text'>
-                <Text>好像什么都 没有</Text>
-              </View>
-            </View>
-          )
-        }
+      <View className="page-body">
+        <View className="page-section page-section-gap">
+          <map
+            style="width: 100%; height: 100vh;"
+            show-compass="true"
+            latitude={latitude}
+            longitude={longitude}
+            markers={markers}
+          >
+          </map>
+        </View>
       </View>
     )
   }

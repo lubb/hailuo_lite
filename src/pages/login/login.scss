@@ -1,4 +1,4 @@
-@import "../../../common/style/vars";
+@import "../../common/style/vars";
 
 page{
   height: 100%;
@@ -6,15 +6,76 @@ page{
 
 .account__page{
   width: 100%;
-  height: 100%;
+  height: 100px;
 }
 
 .account__bg{
-  width: 100%;
-  height: 165rpx;
+  width: 80%;
+  height: 100%;
+  margin-left: 10%;
+  margin-top: 15%;
 }
 
 .account__img{
+  width: 100%;
   height: 100%;
-  text-align: center;
+}
+
+.account__content{
+  position: absolute;
+  top:25%;
+  left:108px;
+}
+
+.account__tag__tel{
+  margin-top: 32px;
+}
+
+.account__tag__password{
+  margin-top: 32px;
+}
+
+.account__icon__tel{
+  width: 28px;
+  height: 46px;
+  margin-right: 32px;
+  vertical-align: middle;
+}
+
+.account__text{
+  font-size: 32px;
+}
+
+.account__icon__lock{
+  width: 28px;
+  height: 30px;
+  margin-right: 32px;
+}
+
+.account__input{
+  border: 1px solid #333;
+  width: 560px;
+  height: 70px;
+  border-radius: 10px;
+  line-height: 70px;
+  margin-top: 20px;
+  font-size: 32px;
+  padding-left:18px;
+}
+
+.account__password, .account__userName{
+  width: 560px;
+  height: 70px;
+  line-height: 70px;
+}
+
+.account__log{
+  background: transparent;
+  //border: 1px solid blue;
+  margin-top: 80px;
+}
+
+.account__myButton{
+  color: #ffffff;
+  background-color: #3d84e0;
 }
