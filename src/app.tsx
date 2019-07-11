@@ -1,7 +1,7 @@
 import Taro, { Component, Config } from '@tarojs/taro'
 import Index from './pages/index'
-
 import './app.scss'
+import ajax from "./common/js/ajax";
 
 require("taro-ui/dist/weapp/css/index.css")
 

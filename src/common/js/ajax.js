@@ -97,7 +97,7 @@ export default {
       url: url,
       data: data,
       method: method,
-      header: {'Authorization':'Bearer '+token},
+      header: {'Authorization':'Bearer '+token,'content-type': contentType},
       success(res) {
         if (res.statusCode === HTTP_STATUS.NOT_FOUND) {
           return Taro.showToast({title: '请求资源不存在', image: require('../../common/images/nonet@2x.png')});

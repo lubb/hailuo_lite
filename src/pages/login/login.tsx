@@ -39,7 +39,25 @@ export default class Login extends Component {
     }
   }
 
-  componentWillMount () { }
+  componentWillMount () {
+    //获取token值
+    let token = Taro.getStorageSync('token');
+    if(token === null || token ==='' || token === undefined){
+      //表示没有登陆
+    }else{
+      //如果存在token 需要获取当前的用户信息 判断是否token是否过期
+      ajax.postToken("/api/user/selectByUserInfo",'','application/x-www-form-urlencoded', token).then(r=>{
+        console.log('userinfo:',r);
+        if(r.data.bizContent == null){
+          //如果过期  需要将token删除 并且重新登陆
+          Taro.removeStorageSync('token');
+        }else{
+          //此时直接跳到首页去
+          Taro.switchTab({url: '/pages/index/index'});
+        }
+      });
+    }
+  }
 
   componentDidMount () { }
 
@@ -57,7 +75,8 @@ export default class Login extends Component {
     this.setState({password:e.detail.value},()=>{console.log(this.state.password)})
   }
 
-  submitLogin(){
+  submitLogin(e){
+    console.log(e);
     if (this.state.loginName === null || this.state.loginName === '' || this.state.loginName === undefined) {
       return Taro.showToast({title: '请输入账号', icon: 'none', duration: 1000})
     }else if(this.state.password === null || this.state.password === '' || this.state.password === undefined){
@@ -70,13 +89,17 @@ export default class Login extends Component {
     let that =this;
     let params = 'grant_type=user_token&loginName='+that.state.loginName+'&password='+that.state.password;
     ajax.postLogin("/oauth/token",params,'application/x-www-form-urlencoded').then(res=>{
-      console.log(res);
-      ajax.postToken("/api/car/driverCar",'','application/x-www-form-urlencoded', res.data.access_token).then(r=>{
-        console.log(r);
-        Taro.setStorageSync('tw:'+that.state.loginName,r.data.bizContent);
-        Taro.switchTab({url: '/pages/index/index'});
-      });
-
+      //此处需要做判断
+      //1、判断res是否不存在账户 2、判断是否密码错误
+      if(res.data.access_token!==undefined){
+        Taro.setStorageSync('token', res.data.access_token);
+      }else{
+        if(res.data.error_description==='password error'){
+          Taro.showToast({title: '密码错误', icon: 'none'})
+        }else{
+          Taro.showToast({title: '不存在该账户', icon: 'none'})
+        }
+      }
     })
 
   }
@@ -94,17 +117,17 @@ export default class Login extends Component {
             <Text className='account__text'>账号</Text>
           </View>
           <View className='account__input'>
-            <Input type='text' className='account__userName' onChange={this.userNameHandleChange.bind(this)} placeholder='请输入账号'/>
+            <Input type='text' className='account__userName' onBlur={this.userNameHandleChange.bind(this)} placeholder='请输入账号'/>
           </View>
           <View className='account__tag__password'>
             <Image className='account__icon__lock' src={code} />
             <Text className='account__text'>密码</Text>
           </View>
           <View className='account__input'>
-            <Input type='password' className='account__password' onChange={this.passwordHandleChange.bind(this)} placeholder='请输入密码' />
+            <Input type='password' className='account__password' onBlur={this.passwordHandleChange.bind(this)} placeholder='请输入密码' />
           </View>
           <View className='account__log'>
-            <Button className='account__myButton' onClick={this.submitLogin.bind(this)}>登录</Button>
+            <Button className='account__myButton' openType='getUserInfo' onGetUserInfo={this.submitLogin.bind(this)}>登录</Button>
           </View>
         </View>
 

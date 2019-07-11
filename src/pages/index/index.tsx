@@ -1,6 +1,7 @@
 import Taro, { Component, Config } from '@tarojs/taro'
 import {Button, Image, View} from '@tarojs/components'
 import './index.scss'
+import ajax from "../../common/js/ajax";
 
 export default class Index extends Component {
 
@@ -18,13 +19,19 @@ export default class Index extends Component {
   constructor () {
     super(...arguments)
     this.state = {
-      info:{
+      order:{
+
+      },
+      pic:{
         pic0:require('./../../common/images/no_img.png')
       }
     }
   }
 
-  componentWillMount () { }
+  componentWillMount () {
+    //首先获取当前用户的车俩信息
+    this.getCurrentCarInfo();
+  }
 
   componentDidMount () { }
 
@@ -34,57 +41,101 @@ export default class Index extends Component {
 
   componentDidHide () { }
 
+  /**
+   * 获取当前用户的车信息
+   */
+  getCurrentCarInfo(){
+    let token = Taro.getStorageSync('token');
+    Taro.showLoading({
+      title: '加载中',
+    });
+    ajax.postToken("/api/car/driverCar",'','application/x-www-form-urlencoded', token).then(r=>{
+      console.log(r);
+      let carInfo = r.data.bizContent;
+      Taro.setStorageSync('carInfo', carInfo);
+      this.getCarIngInfo(carInfo.id, token);
+    });
+  }
+
+  /**
+   * 获取运输中的订单信息
+   * @param userId
+   * @param token
+   */
+  getCarIngInfo(userId, token){
+    let date = this.getThreeMonthDay();
+    let data = 'status=0&carId='+userId+'&starTime='+date;
+     ajax.postToken("/api/order/carOrderList",data,'application/x-www-form-urlencoded', token).then(r=>{
+       console.log(r);
+       if(r){
+         this.setState({
+           order:r.data.bizContent.records[0]
+         })
+       }
+       debugger
+       Taro.hideLoading();
+     });
+  }
+
+  getThreeMonthDay(){
+    var date = new Date();
+    date.setMonth(date.getMonth()-2);
+    return (date.getFullYear()) + "-" +
+      (date.getMonth() + 1) + "-" +
+      (date.getDate());
+  }
+
   render () {
-    let{info}= this.state.info;
+    let{order,pic}= this.state;
     return (
       <View className="container">
         <View className="zan-panel">
           <View className="zan-panel-title">订单信息</View>
           <View className="zan-cell">
             <View className="zan-cell__hd">客户名称</View>
-            <View className="zan-field__input">湖南海虎建材商贸有限公司</View>
+            <View className="zan-field__input">{order.agencyName}</View>
           </View>
           <View className="zan-cell">
             <View className="zan-cell__hd">发货单号</View>
-            <View className="zan-field__input">2834506</View>
+            <View className="zan-field__input">{order.fahuodanhao}</View>
           </View>
           <View className="zan-cell">
             <View className="zan-cell__hd">出厂编号</View>
-            <View className="zan-field__input">IDP4Q90250</View>
+            <View className="zan-field__input">{order.chanpinmingcheng}</View>
           </View>
           <View className="zan-cell">
             <View className="zan-cell__hd">车辆牌照</View>
-            <View className="zan-field__input">湘J68035</View>
+            <View className="zan-field__input">{order.carNumber}</View>
           </View>
           <View className="zan-cell">
             <View className="zan-cell__hd">订单数量</View>
-            <View className="zan-field__input">31</View>
+            <View className="zan-field__input">{order.fahuoshuliang}</View>
           </View>
           <View className="zan-cell">
             <View className="zan-cell__hd">包装方式</View>
-            <View className="zan-field__input">散装</View>
+            <View className="zan-field__input">{order.baozhuangfangshi}</View>
           </View>
           <View className="zan-cell">
             <View className="zan-cell__hd">出厂时间</View>
-            <View className="zan-field__input">2019-07-10 12:27</View>
+            <View className="zan-field__input">{order.chuchangriqi}</View>
           </View>
           <View className="zan-cell">
             <View className="zan-cell__hd">结束时间</View>
-            <View className="zan-field__input">2019-07-10 12:29</View>
+            <View className="zan-field__input">{order.endTime}</View>
           </View>
           <View className="zan-panel-title">到货图片</View>
           <View className="zan-cell-img">
-            <Image className='account__img' src={info.pic0} />
-            <Image className='account__img' src={info.pic0} />
-            <Image className='account__img' src={info.pic0} />
-            <Image className='account__img' src={info.pic0} />
+            <Image className='account__img' src={pic.pic0} />
+            <Image className='account__img' src={pic.pic0} />
+            <Image className='account__img' src={pic.pic0} />
+            <Image className='account__img' src={pic.pic0} />
           </View>
           <View className="zan-panel-title">空车图片</View>
           <View className="zan-cell-img">
-            <Image className='account__img' src={info.pic0} />
-            <Image className='account__img' src={info.pic0} />
-            <Image className='account__img' src={info.pic0} />
-            <Image className='account__img' src={info.pic0} />
+            <Image className='account__img' src={pic.pic0} />
+            <Image className='account__img' src={pic.pic0} />
+            <Image className='account__img' src={pic.pic0} />
+            <Image className='account__img' src={pic.pic0} />
           </View>
           <View className="zan-panel-title">拍照上传</View>
           <View className="zan-cell-btn">
