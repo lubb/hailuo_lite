@@ -67,10 +67,16 @@ export default class Login extends Component {
   }
 
   userLogin(){
-    let params = 'grant_type=user_token&loginName='+this.state.loginName+'&password='+this.state.password;
+    let that =this;
+    let params = 'grant_type=user_token&loginName='+that.state.loginName+'&password='+that.state.password;
     ajax.postLogin("/oauth/token",params,'application/x-www-form-urlencoded').then(res=>{
       console.log(res);
-      Taro.switchTab({url: '/pages/index/index'});
+      ajax.postToken("/api/car/driverCar",'','application/x-www-form-urlencoded', res.data.access_token).then(r=>{
+        console.log(r);
+        Taro.setStorageSync('tw:'+that.state.loginName,r.data.bizContent);
+        Taro.switchTab({url: '/pages/index/index'});
+      });
+
     })
 
   }

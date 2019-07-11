@@ -79,6 +79,43 @@ export default {
     return Taro.request(option);
   },
 
+  /**
+   * 登陆专用
+   * @param params
+   * @param method
+   * @param fullUrl false
+   * @return {*}
+   */
+  baseOptionsToken(params, method = 'GET') {
+    let { url, data, token } = params;
+    url = hytApi.hailuo_service_path + url;
+    let contentType = 'application/x-www-form-urlencoded';
+    contentType = params.contentType || contentType;
+    const option = {
+      isShowLoading: false,
+      loadingText: '正在加载',
+      url: url,
+      data: data,
+      method: method,
+      header: {'Authorization':'Bearer '+token},
+      success(res) {
+        if (res.statusCode === HTTP_STATUS.NOT_FOUND) {
+          return Taro.showToast({title: '请求资源不存在', image: require('../../common/images/nonet@2x.png')});
+        } else if (res.statusCode === HTTP_STATUS.BAD_GATEWAY) {
+          return Taro.showToast({title: '服务端通信失败', image: require('../../common/images/nonet@2x.png')});
+        } else if (res.statusCode === HTTP_STATUS.FORBIDDEN) {
+          return Taro.showToast({title: '没有权限访问', image: require('../../common/images/nonet@2x.png')});
+        } else if (res.statusCode === HTTP_STATUS.SUCCESS) {
+          return res.data;
+        }
+      },
+      error(e) {
+        Taro.showToast({title: '请求接口出现问题', image: require('../../common/images/nonet@2x.png')});
+      }
+    };
+    return Taro.request(option);
+  },
+
   get(url, data = '') {
     let option = { url, data };
     return this.baseOptions(option);
@@ -92,6 +129,11 @@ export default {
   postLogin(url, data, contentType){
     let params = { url, data, contentType };
     return this.baseOptionsLogin(params, 'POST');
+  },
+
+  postToken(url, data, contentType, token){
+    let params = { url, data, contentType, token };
+    return this.baseOptionsToken(params, 'POST');
   }
 
 }
