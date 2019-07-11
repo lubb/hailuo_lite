@@ -1,0 +1,63 @@
+@import "../../common/style/vars";
+
+page{
+  height: 100%;
+}
+
+.container{
+  background: #f9f9f9;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 15px 0;
+}
+
+.zan-panel{
+  font-size: 28px;
+}
+
+.zan-panel-title{
+  font-size: 28px;
+  color: #999;
+  border-bottom: 1px solid gainsboro;
+  height:80px;
+  line-height: 80px;
+  padding-left: 30px;
+}
+
+.zan-cell{
+  color: #333;
+  background: #fff;
+  border-bottom: 1px solid gainsboro;
+  height:80px;
+  line-height: 80px;
+  padding-left: 30px;
+}
+
+.zan-cell__hd{
+  color: #333;
+  padding-right: 20px;
+  display: inline-block;
+}
+
+.zan-field__input{
+  display: inline-block;
+}
+
+.zan-cell-img{
+  background: #fff;
+  border-bottom: 1px solid gainsboro;
+  height:158px;
+}
+
+.account__img{
+  width:25%;
+  height:100%;
+}
+
+.zan-cell-btn{
+  background: #fff;
+  width:86%;
+  margin-left: 7%;
+  margin-top: 12px;
+}
+

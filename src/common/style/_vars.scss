@@ -1,0 +1,93 @@
+// **********
+// sass公共变量定义
+// **********
+
+// 色调定义
+$color_main: #DDB67D;                   // 主色调: 橙色
+$color_main_active: #c39550;            // 主色调: 激活状态
+$color_pink: #FF9C9C;                   // 粉色
+$color_pink_deep: #FF70A2;
+$color_orange: #FF7120;
+$color_yellow: #FFD100;
+$color_blue: #3694FF;
+
+// 背景色
+$bgc_disable: #d2d2d2;                  // 禁用按钮颜色
+$bgc_gray: #f0f2f5;                     // 灰色背景块
+
+// 字体颜色
+$color_text_main: #333;
+$color_text_sub: #666;
+$color_text_weak: #999;
+
+// 字体大小，设计稿2倍图下（1倍像素 * 2）
+$font_size_32: 32px;
+
+// z-index
+$z_index_first: 3;                      // 最低层级，高于默认页面元素z-index（0～2）
+$z_index_double: 10;
+$z_index_triple: 100;
+$z_index_ultra: 1000;
+$z_index_rampage: 999999;               // 最高级
+
+// 圆角
+$radius_mini: 4px;
+$radius_min: 12px;
+
+// 阴影
+$box_shadow: 0 1px 15px 0 rgba(0,0,0,0.15); // 0 0 10px 1px rgba(0,0,0,.2);
+
+// mixin
+@mixin box-shadow($shadow...) {
+  -webkit-box-shadow: $shadow;
+  -moz-box-shadow: $shadow;
+  box-shadow: $shadow;
+}
+
+@mixin _boxShadow {
+  box-shadow: $box_shadow;
+}
+
+@mixin _clear {
+  width: 0;
+  height: 0;
+  display: block;
+  content: '';
+  clear: both;
+  visibility: hidden;
+  font-size: 0;
+  line-height: 0;
+  zoom: 1;
+}
+
+@mixin _boxSizing{
+  box-sizing: border-box;
+}
+
+@mixin _textEllipsis{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin _textEllipsisLine2{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  /*! autoprefixer: off */
+  -webkit-box-orient: vertical;
+}
+
+@mixin _bgi {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+@mixin _bgIcon($url){
+  background-image: url($url);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}

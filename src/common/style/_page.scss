@@ -1,0 +1,13 @@
+// **********
+// 页面相关的公共样式
+// **********
+@import "vars";
+
+// property
+.propertyTitle {
+  color: $color_text_main;
+  font-size: 40px;
+  font-weight: 600;
+  padding: 0 32px;
+  @include _boxSizing();
+}

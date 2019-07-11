@@ -1,0 +1,38 @@
+@import "../../common/style/vars";
+
+page{
+  height: 100%;
+}
+
+.order_sigle{
+  height:155px;
+  border: 1px solid gainsboro;
+  font-size: 28px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.order_one{
+  line-height: 50px;
+}
+
+.order_two{
+  line-height: 50px;
+}
+
+.order_two_date{
+  display: inline-block;
+  width:85%;
+  color: #666;
+}
+
+.order_two_num{
+  display: inline-block;
+  width:15%;
+  color: #666;
+}
+
+.order_three{
+  line-height: 50px;
+  color: #f44;
+}
