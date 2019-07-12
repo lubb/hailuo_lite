@@ -27,7 +27,8 @@ class App extends Component {
       'pages/device/device',
       'pages/order/order',
       'pages/order/detail',
-      'pages/index/index'
+      'pages/index/index',
+      'pages/index/arrive/arrive'
     ],
     window: {
       backgroundTextStyle: 'light',

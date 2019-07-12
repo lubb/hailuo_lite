@@ -91,8 +91,10 @@ export default class Login extends Component {
     ajax.postLogin("/oauth/token",params,'application/x-www-form-urlencoded').then(res=>{
       //此处需要做判断
       //1、判断res是否不存在账户 2、判断是否密码错误
+      console.log(res);
       if(res.data.access_token!==undefined){
         Taro.setStorageSync('token', res.data.access_token);
+        Taro.switchTab({url: '/pages/index/index'});
       }else{
         if(res.data.error_description==='password error'){
           Taro.showToast({title: '密码错误', icon: 'none'})

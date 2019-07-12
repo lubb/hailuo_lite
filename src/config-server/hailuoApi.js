@@ -10,6 +10,7 @@
 const UrlConstantsUat = {
   hailuo_api_path: 'http://119.23.144.116:9700',
   hailuo_service_path: 'http://119.23.144.116:9720',
+  hailuo_img_path:'http://119.23.144.116:9610',
   appId: 'wx55d3f914106096d8',
 }
 
@@ -20,6 +21,7 @@ const UrlConstantsUat = {
 const UrlConstantsProd = {
   hailuo_api_path: 'http://119.23.144.116:9700',
   hailuo_service_path: 'http://119.23.144.116:9720',
+  hailuo_img_path:'http://119.23.144.116:9610',
   appId: 'wx55d3f914106096d8',
 }
 
