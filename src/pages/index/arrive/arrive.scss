@@ -3,3 +3,92 @@
 page{
   height: 100%;
 }
+
+.img__position{
+  font-size: 24px;
+  height:110px;
+  border-bottom: 1px solid #dcdcdc;
+  border-top: 1px solid #dcdcdc;
+  position: relative;
+}
+
+.icon__pin{
+  margin-right: 6px;
+  position: absolute;
+  top:30%;
+  left:7%;
+}
+
+.loc_detail{
+  word-break:break-all;
+  font-size: 26px;
+  width:80%;
+  top:22%;
+  position: absolute;
+  left:13%;
+}
+
+.img__step{
+  border-bottom: 1px solid #dcdcdc;
+  margin-top: 12px;
+}
+
+.at-steps__title{
+  font-size: 24px;
+}
+
+.img__title{
+  font-size: 34px;
+  text-align: center;
+  height:100px;
+  line-height: 100px;
+  color: #999;
+  border-bottom: 1px solid #dcdcdc;
+}
+
+.img__choose{
+  text-align: center;
+  height:300rpx;
+  line-height: 320rpx;
+  border-bottom: 1px solid #dcdcdc;
+}
+
+.img__choose__border{
+  width: 76%;
+  height:96%;
+  border:1px solid #3d84e0;
+  margin-top: 2%;
+  margin-left: 12%;
+}
+
+.img__choose__real{
+  width:76%;
+  height: 92%;
+  margin-top: 2%;
+}
+
+.img__choose__icon{
+  width: 120px;
+  height: 130px;
+}
+
+.img_btn{
+  height: 120px;
+  margin-top: 20px;
+  border-bottom: 1px solid #dcdcdc;
+}
+
+.img_btn_btn{
+  width:90%;
+}
+
+.position__btn{
+  width:120px;
+  text-align: center;
+  border: 1px solid #f44;
+  color: #f44;
+  display: inline-block;
+  border-radius: 6px;
+  font-size: 24px;
+  height:40px;
+}

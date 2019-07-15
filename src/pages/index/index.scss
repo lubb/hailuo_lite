@@ -24,6 +24,11 @@ page{
   padding-left: 30px;
 }
 
+.long_text{
+  white-space:nowrap;overflow: hidden;text-overflow: ellipsis;
+  width:80%;
+}
+
 .zan-cell{
   color: #333;
   background: #fff;
@@ -41,6 +46,7 @@ page{
 
 .zan-field__input{
   display: inline-block;
+  vertical-align: top;
 }
 
 .zan-cell-img{

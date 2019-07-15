@@ -119,7 +119,6 @@ export default class Index extends Component {
         }
         if(arrayHeavy && arrayHeavy.length>0){
           let h = this.genterData(arrayHeavy);
-          debugger
           flagHeavy = h.flag;
           numHeavy = h.num;
           picGroupOrderHeavy = h.picGroupOrder;
@@ -164,6 +163,11 @@ export default class Index extends Component {
             isEmp:flagHeavy?false:true
           })
         }
+      }else{
+        this.setState({
+          isArr:false,
+          isEmp:true,
+        })
       }
     });
   }
@@ -289,9 +293,20 @@ export default class Index extends Component {
 
   takePhoto(){
     console.log('state',this.state);
+    Taro.navigateTo({url:'/pages/index/arrive/arrive?carId='+this.state.order.carId+'' +
+        '&orderId='+this.state.order.id+'&picType=2&picGroupOrder='+this.state.picGroupOrderHeavy+'' +
+        '&picGroup='+this.state.picGroup});
+  }
+
+  takePhotoEmp(){
+    console.log('state',this.state);
+    Taro.navigateTo({url:'/pages/index/arrive/arrive?carId='+this.state.order.carId+'' +
+        '&orderId='+this.state.order.id+'&picType=3&picGroupOrder='+this.state.picGroupOrderNull+'' +
+        '&picGroup='+this.state.picGroup});
   }
 
   upInfo(){
+    console.log('state2',this.state);
     this.state.heavy.push({
       pic0:this.state.defaultImg,
       pic1:this.state.defaultImg,
@@ -321,7 +336,7 @@ export default class Index extends Component {
           <View className="zan-panel-title">订单信息</View>
           <View className="zan-cell">
             <View className="zan-cell__hd">客户名称</View>
-            <View className="zan-field__input">{order.agencyName}</View>
+            <View className="zan-field__input long_text">{order.agencyName}</View>
           </View>
           <View className="zan-cell">
             <View className="zan-cell__hd">发货单号</View>
@@ -382,7 +397,7 @@ export default class Index extends Component {
             <Button className='account__myButton' onClick={this.takePhoto} disabled={isArr} type='primary'>重车到货</Button>
           </View>
           <View className="zan-cell-btn">
-            <Button className='account__myButton' onClick={this.takePhoto} disabled={isEmp} type='primary'>空车拍照</Button>
+            <Button className='account__myButton' onClick={this.takePhotoEmp} disabled={isEmp} type='primary'>空车拍照</Button>
           </View>
           <View className="zan-cell-btn">
             <Button className='account__myButton' onClick={this.upInfo}  disabled={!(isArr && isEmp)} type='primary'>多点卸载</Button>

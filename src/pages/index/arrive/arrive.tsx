@@ -1,9 +1,10 @@
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Image, Text, Input, Button  } from '@tarojs/components'
-import { AtSteps,AtImagePicker } from 'taro-ui'
+import { View, Image, Button  } from '@tarojs/components'
+import { AtSteps, AtIcon, AtButton} from 'taro-ui'
 import bmap from "../../../common/js/bmap-wx.min";
 import './arrive.scss'
 import ajax from "../../../common/js/ajax";
+import hytApi from "../../../config-server/hailuoApi";
 
 export default class Arrive extends Component {
 
@@ -21,53 +22,50 @@ export default class Arrive extends Component {
   constructor () {
     super(...arguments)
     this.state = {
-      current: 0,
+      carId:this.$router.params.carId,
+      orderId:this.$router.params.orderId,
+      current: this.$router.params.picGroupOrder-1,
+      picGroup:this.$router.params.picGroup,
+      picGroupOrder:this.$router.params.picGroupOrder,
+      picType:this.$router.params.picType,
+      pic:'',
+      code:'',
+      loc:'',
+      addIcon:require("./../../../common/images/photo.jpg"),
       steps:[
         {
-          'title': '第一步',
+          'title': '车头',
+          'success': true
         },
         {
-          'title': '第二步',
+          'title': '车尾',
         },
         {
-          'title': '第三步',
+          'title': '货堆正面',
         },
         {
-          'title': '第四步',
+          'title': '货堆侧面',
         }
       ],
       files: [],
     }
   }
 
-  onChanges (files) {
-    this.setState({
-      files:files
-    })
-  }
-
-  onFail (mes) {
-    console.log(mes)
-  }
-  onImageClick (index, file) {
-    console.log(index, file)
-  }
-
   componentWillMount () {
-    var BMap = new bmap.BMapWX({
-      ak: 'UKWEehRX37kF537PUAHXoBKGlSvqnqvl'
-    });
-    var fail = function (data) {
-      console.log('1',data)
-    };
-    var success = function (data) {
-      var locstr = data.wxMarkerData[0].address + data.wxMarkerData[0].desc + data.wxMarkerData[0].business;
-      cosole.log(locstr);
-    }
-    BMap.regeocoding({
-      fail: fail,
-      success: success
-    })
+    // var BMap = new bmap.BMapWX({
+    //   ak: 'UKWEehRX37kF537PUAHXoBKGlSvqnqvl'
+    // });
+    // var fail = function (data) {
+    //   console.log('1',data)
+    // };
+    // var success = function (data) {
+    //   var locstr = data.wxMarkerData[0].address + data.wxMarkerData[0].desc + data.wxMarkerData[0].business;
+    //   cosole.log(locstr);
+    // }
+    // BMap.regeocoding({
+    //   fail: fail,
+    //   success: success
+    // })
   }
 
   componentDidMount () { }
@@ -85,53 +83,107 @@ export default class Arrive extends Component {
   }
 
   uploadPic(){
-    let file = this.state.files[0];
-    Taro.uploadFile({
-      url:'http://119.23.144.116:9600/upload',
-      name:'file',
-      filePath:file.url,
-    }).then(res => {
-      if (res.statusCode === 200) {
-        this.addOrderPic(12077,2289426);
-        debugger;
-        let obj = JSON.parse(res.data);
-        file.fingerprint = obj.files[0].code;
-        this.setState({
-          files: files
-        })
-      } else {
-
+    let  that = this;
+    Taro.getLocation({
+      type: 'wgs84',
+      success(res) {
+        console.log(res);
+        let token = Taro.getStorageSync('token');
+        console.log(that.state);
+        let data = 'carId='+that.state.carId+'&orderId='+that.state.orderId+'&phoneLat='+res.latitude+'&phoneLon='+res.longitude+'&phoneSendTime='+that.getTimeFormat()+'&pic='+that.state.code+'&picGroup='+that.state.picGroup+'&picGroupOrder='+that.state.picGroupOrder+'&picType='+that.state.picType;
+        console.log(data);
+        ajax.postToken("/api/order/addOrderPic",data,'application/x-www-form-urlencoded', token).then(r=>{
+          console.log(r);
+        });
       }
-    }).catch(res => {
-      console.log(res);
-
-    });
+    })
   }
 
-  addOrderPic(carId,orderId){
-    let token = Taro.getStorageSync('token');
-    let data = 'carId='+carId+'&orderId='+orderId+'&phoneLat=11&phoneLon=22&phoneSendTime=2019-07-12 19:20:20&pic=87ABCD9DA8C64C10C90ADE90690FA686AED8F3D5&picGroup=1&picGroupOrder=1&picType=2';
-    ajax.postToken("/api/order/addOrderPic",data,'application/x-www-form-urlencoded', token).then(r=>{
-      console.log(r);
-    });
+  getTimeFormat(){
+    var now = new Date();
+    var yy = now.getFullYear();      //年
+    var mm = now.getMonth() + 1;     //月
+    var dd = now.getDate();          //日
+    var hh = now.getHours();         //时
+    var ii = now.getMinutes();       //分
+    var ss = now.getSeconds();       //秒
+    var clock = yy + "-";
+    if(mm < 10) clock += "0";
+    clock += mm + "-";
+    if(dd < 10) clock += "0";
+    clock += dd + " ";
+    if(hh < 10) clock += "0";
+    clock += hh + ":";
+    if (ii < 10) clock += '0';
+    clock += ii + ":";
+    if (ss < 10) clock += '0';
+    clock += ss;
+    return clock;     //获取当前日期
+  }
+
+  onImgClick() {
+    console.log('选择图片')
+    let that = this;
+    Taro.chooseImage({
+      count:1,
+      sizeType: ['original', 'compressed'],
+      sourceType: ['camera'],
+    }).then(res=>{
+      let tempFilePaths = res.tempFilePaths
+      console.log('tempFilePaths',tempFilePaths)
+      Taro.showLoading({title: '加载中',})
+      Taro.uploadFile({
+        url:'http://119.23.144.116:9600/upload',
+        filePath: tempFilePaths[0],
+        name: 'file',
+      }).then(rst=>{
+        Taro.hideLoading()
+        console.log('图片上传结果===>',rst)
+        let obj = JSON.parse(rst.data);
+        console.log(obj);
+        that.setState({pic: hytApi.hailuo_img_path+'/'+obj.bizContent.code,code:obj.bizContent.code})
+      }).catch(rst=>{
+        Taro.hideLoading();
+        console.log('图片上传失败===>',rst)
+        Taro.showToast({
+          title: '图片上传失败',
+          image: require('../../../common/images/nonet@2x.png')
+        })
+      })
+    }).catch(res=>{
+      console.log('打开相册===>',res)
+      Taro.hideLoading();
+    })
   }
 
   render () {
     return (
       <View>
-      <AtSteps
-        items={this.state.steps}
-        current={this.state.current}
-        onChange={this.onChange.bind(this)}
-      />
-      <AtImagePicker
-        length={5}
-        files={this.state.files}
-        onChange={this.onChanges.bind(this)}
-        onFail={this.onFail.bind(this)}
-        onImageClick={this.onImageClick.bind(this)}
-        />
-        <Button onClick={this.uploadPic}>下一步</Button>
+        <View className='img__position'>
+          <View className='icon__pin'><AtIcon value='map-pin' size='20' color='#3d84e0'></AtIcon></View>
+          <View className='loc_detail'>{this.state.loc}<View className='position__btn'>刷新位置</View></View>
+        </View>
+        <View className='img__step'>
+          <AtSteps
+            items={this.state.steps}
+            current={this.state.current}
+            onChange={this.onChange.bind(this)}
+          />
+        </View>
+        {this.state.pic !==''? (<View className='img__title'>照片</View>):('')}
+        {this.state.pic !== '' ? (<View className='img__choose'>
+          <Image src={this.state.pic} className='img__choose__real'/>
+        </View>):('')
+        }
+        <View className='img__title'>拍照</View>
+        <View className='img__choose' onClick={this.onImgClick}>
+          <View className='img__choose__border'>
+              <Image src={this.state.addIcon} mode='widthFix' className='img__choose__icon'/>
+          </View>
+        </View>
+        <View className='img_btn'>
+          <Button className='img_btn_btn' type='primary' onClick={this.uploadPic}>下一步</Button>
+        </View>
       </View>
     )
   }
