@@ -52,15 +52,18 @@ export default class Arrive extends Component {
   }
 
   componentWillMount () {
+    var _this = this;
     var BMap = new bmap.BMapWX({
-      ak: 'FOQuk3Q7RewniogGzcaVQOkmjTLAiAiQ'
+      ak: 'UKWEehRX37kF537PUAHXoBKGlSvqnqvl'
     });
     var fail = function (data) {
        console.log('1',data)
      };
      var success = function (data) {
        var locstr = data.wxMarkerData[0].address + data.wxMarkerData[0].desc + data.wxMarkerData[0].business;
-       cosole.log(locstr);
+       _this.setState({
+         loc: locstr
+       })
      }
      BMap.regeocoding({
        fail: fail,
@@ -77,11 +80,11 @@ export default class Arrive extends Component {
   componentDidHide () { }
 
   onChange (current) {
-    this.setState({
-      current
-    })
   }
 
+  /**
+   * 下一步
+   */
   uploadPic(){
     let  that = this;
     Taro.getLocation({
@@ -126,6 +129,9 @@ export default class Arrive extends Component {
     })
   }
 
+  /**
+   * 获取当前时间 str
+   */
   getTimeFormat(){
     var now = new Date();
     var yy = now.getFullYear();      //年
@@ -148,6 +154,9 @@ export default class Arrive extends Component {
     return clock;     //获取当前日期
   }
 
+  /**
+   * 图片上传
+   */
   onImgClick() {
     let that = this;
     Taro.chooseImage({

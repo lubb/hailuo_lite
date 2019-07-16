@@ -33,6 +33,11 @@ export default class Mine extends Component {
 
   componentDidHide () { }
 
+  logout(){
+    Taro.clearStorageSync();
+    Taro.navigateTo({url:'/pages/login/login'});
+  }
+
   render () {
     const {realName,area} = this.state;
     return (
@@ -94,7 +99,7 @@ export default class Mine extends Component {
         </View>
         <View className="zan-panel">
           <View className="zan-cell">
-            <View catchtap='logout' className="zan-cell__bd zan-c-red zan-center">退出登录</View>
+            <View onClick={this.logout} className="zan-cell__bd zan-c-red zan-center">退出登录</View>
           </View>
         </View>
       </View>

@@ -22,6 +22,7 @@ export default class Index extends Component {
   constructor () {
     super(...arguments)
     this.state = {
+      listShow: true,
       defaultImg:require('./../../common/images/no_img.png'),
       order:{},
       isArr: true,
@@ -87,9 +88,38 @@ export default class Index extends Component {
   }
 
   /**
+   * 初始化方法
+   */
+  initData(){
+    this.setState({
+      listShow: true,
+      defaultImg:require('./../../common/images/no_img.png'),
+      order:{},
+      isArr: true,
+      isEmp: true,
+      picGroup:1,
+      picGroupOrderHeavy:1,
+      picGroupOrderNull:1,
+      heavy:[{
+        pic0:require('./../../common/images/no_img.png'),
+        pic1:require('./../../common/images/no_img.png'),
+        pic2:require('./../../common/images/no_img.png'),
+        pic3:require('./../../common/images/no_img.png')
+      }],
+      empty:[{
+        pic0:require('./../../common/images/no_img.png'),
+        pic1:require('./../../common/images/no_img.png'),
+        pic2:require('./../../common/images/no_img.png'),
+        pic3:require('./../../common/images/no_img.png')
+      }],
+    });
+  }
+
+  /**
    * 获取当前用户的车信息
    */
   getCurrentCarInfo(){
+    this.initData();
     let token = Taro.getStorageSync('token');
     Taro.showLoading({
       title: '加载中',
@@ -114,10 +144,15 @@ export default class Index extends Component {
        console.log(r);
        if(r){
          this.setState({
+           listShow:true,
            order:r.data.bizContent.records[0]
          })
+         this.getPic(r.data.bizContent.records[0].id, token);
+       }else{
+         this.setState({
+           listShow:false
+         })
        }
-       this.getPic(r.data.bizContent.records[0].id, token);
        Taro.hideLoading();
      });
   }
@@ -388,86 +423,111 @@ export default class Index extends Component {
     }
   }
 
+  /**
+   * 结束订单
+   */
+  endOrder(){
+    debugger
+    let data = 'orderId='+this.state.order.id;
+    let token = Taro.getStorageSync('token');
+    Taro.showLoading({
+      title: '结束订单中',
+    });
+    ajax.postToken("/api/order/orderOver",data,'application/x-www-form-urlencoded', token).then(r=>{
+      Taro.hideLoading();
+      if(r.data.bizContent == 1){
+        Taro.showToast({title: '订单结束成功', icon: 'success'});
+        this.getCurrentCarInfo();
+      }else{
+        Taro.showToast({title: '订单结束失败，请重试', icon: 'none'})
+      }
+    });
+  }
+
   render () {
-    let{order,heavy,empty,isArr,isEmp}= this.state;
+    let{order,heavy,empty,isArr,isEmp,listShow}= this.state;
     return (
       <View className="container">
-        <View className="zan-panel">
-          <View className="zan-panel-title">订单信息</View>
-          <View className="zan-cell">
-            <View className="zan-cell__hd">客户名称</View>
-            <View className="zan-field__input long_text">{order.agencyName}</View>
-          </View>
-          <View className="zan-cell">
-            <View className="zan-cell__hd">发货单号</View>
-            <View className="zan-field__input">{order.fahuodanhao}</View>
-          </View>
-          <View className="zan-cell">
-            <View className="zan-cell__hd">产品名称</View>
-            <View className="zan-field__input">{order.chanpinmingcheng}</View>
-          </View>
-          <View className="zan-cell">
-            <View className="zan-cell__hd">车辆牌照</View>
-            <View className="zan-field__input">{order.carNumber}</View>
-          </View>
-          <View className="zan-cell">
-            <View className="zan-cell__hd">订单数量</View>
-            <View className="zan-field__input">{order.fahuoshuliang}</View>
-          </View>
-          <View className="zan-cell">
-            <View className="zan-cell__hd">包装方式</View>
-            <View className="zan-field__input">{order.baozhuangfangshi}</View>
-          </View>
-          <View className="zan-cell">
-            <View className="zan-cell__hd">出厂时间</View>
-            <View className="zan-field__input">{order.chuchangriqi}</View>
-          </View>
-          <View className="zan-cell">
-            <View className="zan-cell__hd">结束时间</View>
-            <View className="zan-field__input">{order.endTime == null ? '运输中...': order.endTime}</View>
-          </View>
-          <View className="zan-panel-title">到货图片</View>
-          {
-            heavy.map((item, index) => {
-              return (
-                <View className="zan-cell-img">
-                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic0)} src={item.pic0} />
-                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic1)} src={item.pic1} />
-                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic2)} src={item.pic2} />
-                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic3)} src={item.pic3} />
+      { listShow ?
+      (
+      <View className="zan-panel">
+        <View className="zan-panel-title">订单信息</View>
+        <View className="zan-cell">
+          <View className="zan-cell__hd">客户名称</View>
+          <View className="zan-field__input long_text">{order.agencyName}</View>
+        </View>
+        <View className="zan-cell">
+          <View className="zan-cell__hd">发货单号</View>
+          <View className="zan-field__input">{order.fahuodanhao}</View>
+        </View>
+        <View className="zan-cell">
+          <View className="zan-cell__hd">产品名称</View>
+          <View className="zan-field__input">{order.chanpinmingcheng}</View>
+        </View>
+        <View className="zan-cell">
+          <View className="zan-cell__hd">车辆牌照</View>
+          <View className="zan-field__input">{order.carNumber}</View>
+        </View>
+        <View className="zan-cell">
+          <View className="zan-cell__hd">订单数量</View>
+          <View className="zan-field__input">{order.fahuoshuliang}</View>
+        </View>
+        <View className="zan-cell">
+          <View className="zan-cell__hd">包装方式</View>
+          <View className="zan-field__input">{order.baozhuangfangshi}</View>
+        </View>
+        <View className="zan-cell">
+          <View className="zan-cell__hd">出厂时间</View>
+          <View className="zan-field__input">{order.chuchangriqi}</View>
+        </View>
+        <View className="zan-cell">
+          <View className="zan-cell__hd">结束时间</View>
+          <View className="zan-field__input">{order.endTime == null ? '运输中...': order.endTime}</View>
+        </View>
+        <View className="zan-panel-title">到货图片</View>
+        {
+          heavy.map((item, index) => {
+            return (
+              <View className="zan-cell-img">
+                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic0)} src={item.pic0} />
+                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic1)} src={item.pic1} />
+                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic2)} src={item.pic2} />
+                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic3)} src={item.pic3} />
               </View>
-              )
-            })
-          }
-          <View className="zan-panel-title">空车图片</View>
-          {
-            empty.map((item, index) => {
-              return (
-                <View className="zan-cell-img">
-                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic0)} src={item.pic0} />
-                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic1)} src={item.pic1} />
-                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic2)} src={item.pic2} />
-                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic3)} src={item.pic3} />
-                </View>
-              )
-            })
-          }
-          <View className="zan-panel-title">拍照上传</View>
-          <View className="zan-cell-btn">
-            <Button className='account__myButton' onClick={this.takePhoto} type='primary'>重车到货</Button>
-          </View>
-          <View className="zan-cell-btn">
-            <Button className='account__myButton' onClick={this.takePhotoEmp}  type='primary'>空车拍照</Button>
-          </View>
-          <View className="zan-cell-btn">
-            <Button className='account__myButton' onClick={this.upInfo} type='primary'>多点卸载</Button>
-          </View>
-          <View className="zan-cell-btn">
-            <button className='account__myButton' type='default'>订单完成</button>
-          </View>
+            )
+          })
+        }
+        <View className="zan-panel-title">空车图片</View>
+        {
+          empty.map((item, index) => {
+            return (
+              <View className="zan-cell-img">
+                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic0)} src={item.pic0} />
+                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic1)} src={item.pic1} />
+                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic2)} src={item.pic2} />
+                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic3)} src={item.pic3} />
+              </View>
+            )
+          })
+        }
+        <View className="zan-panel-title">拍照上传</View>
+        <View className="zan-cell-btn">
+          <Button className='account__myButton' onClick={this.takePhoto} type='primary'>重车到货</Button>
+        </View>
+        <View className="zan-cell-btn">
+          <Button className='account__myButton' onClick={this.takePhotoEmp}  type='primary'>空车拍照</Button>
+        </View>
+        <View className="zan-cell-btn">
+          <Button className='account__myButton' onClick={this.upInfo} type='primary'>多点卸载</Button>
+        </View>
+        <View className="zan-cell-btn">
+          <Button className='account__myButton' onClick={this.endOrder} type='default'>订单完成</Button>
         </View>
       </View>
-
+      )
+        : '暂无订单'
+      }
+      </View>
     )
   }
 }
