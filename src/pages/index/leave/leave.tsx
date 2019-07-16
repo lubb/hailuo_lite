@@ -119,6 +119,9 @@ export default class Leave extends Component {
             Taro.showToast({title: '保存图片失败，请重试', icon: 'none'})
           }
         });
+      },
+      fail(res){
+        Taro.showToast({title: '获取位置失败，请打开手机的GPS', icon: 'none'})
       }
     })
   }
