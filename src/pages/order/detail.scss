@@ -24,6 +24,11 @@ page{
   padding-left: 30px;
 }
 
+.long_text{
+  white-space:nowrap;overflow: hidden;text-overflow: ellipsis;
+  width:80%;
+}
+
 .zan-cell{
   color: #333;
   background: #fff;
@@ -41,16 +46,26 @@ page{
 
 .zan-field__input{
   display: inline-block;
+  vertical-align: top;
 }
 
 .zan-cell-img{
   background: #fff;
   border-bottom: 1px solid gainsboro;
   height:158px;
+  margin-top: 12px;
 }
 
 .account__img{
-  width:25%;
+  width:24%;
   height:100%;
+  margin-left: 1%;
+}
+
+.zan-cell-btn{
+  background: #fff;
+  width:86%;
+  margin-left: 7%;
+  margin-top: 12px;
 }
 

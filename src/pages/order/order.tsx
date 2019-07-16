@@ -44,7 +44,7 @@ export default class Order extends Component {
   componentDidHide () { }
 
   detailOpen(item){
-    let url = '/pages/order/detail';
+    let url = '/pages/order/detail?orderId='+item.id;
     Taro.navigateTo({url: url});
   }
 
