@@ -1,6 +1,7 @@
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Image, Text, Input, Button  } from '@tarojs/components'
 import './order.scss'
+import ajax from "../../common/js/ajax";
 
 export default class Order extends Component {
 
@@ -12,36 +13,27 @@ export default class Order extends Component {
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
   config: Config = {
-    navigationBarTitleText: '订单列表'
+    navigationBarTitleText: '订单列表',
+    enablePullDownRefresh: true,
+    onReachBottomDistance: 50,
   }
 
   constructor () {
     super(...arguments)
     this.state = {
+      current:1,
+      size:10,
+      total:0,
+      pages:1,
+      emptyTxt:'',
       orderList:[
-        {
-          'name':'湖南海虎建材商贸有限公司',
-          'date':'2019-07-10 12:27:41',
-          'type':'散装',
-          'num':31,
-        },
-        {
-          'name':'湖南海虎建材商贸有限公司',
-          'date':'2019-07-10 12:27:41',
-          'type':'散装',
-          'num':31,
-        },
-        {
-          'name':'湖南海虎建材商贸有限公司',
-          'date':'2019-07-10 12:27:41',
-          'type':'散装',
-          'num':31,
-        }
       ],
     }
   }
 
-  componentWillMount () { }
+  componentWillMount () {
+    this.getList(this.state.current);
+  }
 
   componentDidMount () { }
 
@@ -56,8 +48,91 @@ export default class Order extends Component {
     Taro.navigateTo({url: url});
   }
 
+  /**
+   * 获取当前用户的车信息
+   */
+  getList(current){
+    let token = Taro.getStorageSync('token');
+    Taro.showLoading({
+      title: '加载中',
+    });
+    ajax.postToken("/api/car/driverCar",'','application/x-www-form-urlencoded', token).then(r=>{
+      let carInfo = r.data.bizContent;
+      this.getOrderList(carInfo.id, token, current);
+    });
+  }
+
+  /**
+   * 获取一个月内的订单
+   */
+  getThreeMonthDay(){
+    var date = new Date();
+    date.setMonth(date.getMonth()-1);
+    return (date.getFullYear()) + "-" +
+      (date.getMonth() + 1) + "-" +
+      (date.getDate());
+  }
+
+  /**
+   * 获取订单列表
+   * @param userId
+   * @param token
+   * @param current
+   */
+  getOrderList(userId, token, current){
+    let date = this.getThreeMonthDay();
+    let data ='';
+    if(current == 1){
+      data = 'status=1&carId='+userId+'&starTime='+date+'&current='+current+'&size=10';
+    }else{
+      data = 'status=1&carId='+userId+'&starTime='+date+'&current='+current+'&size=10&total='+this.state.total;
+    }
+    ajax.postToken("/api/order/carOrderList",data,'application/x-www-form-urlencoded', token).then(r=>{
+      console.log(r);
+      if(r && r.data.bizContent.records.length>0){
+        if(current == 1){
+          this.setState({
+            pages:r.data.bizContent.pages,
+            total:r.data.bizContent.total,
+            current:current+1,
+            orderList:r.data.bizContent.records
+          })
+        }else{
+          this.setState({
+            total:r.data.bizContent.total,
+            current:current+1,
+            orderList:this.state.orderList.concat(r.data.bizContent.records)
+          })
+        }
+      }else{
+        this.setState({
+          emptyTxt:'没有已完成的订单'
+        })
+        Taro.showToast({title: '请重新加载', icon: 'none'})
+      }
+      Taro.hideLoading();
+    });
+  }
+
+  /**
+   * 下拉事件
+   */
+  onPullDownRefresh(e) {
+    this.getList(1);
+  }
+
+  /**
+   * 上拉事件监听
+   * @param e
+   */
+  onReachBottom(e) {
+    if(this.state.pages >= this.state.current){
+      this.getList(this.state.current);
+    }
+  }
+
   render () {
-    const { orderList } = this.state;
+    const { orderList,emptyTxt } = this.state;
     return (
       <View>
         {
@@ -67,12 +142,12 @@ export default class Order extends Component {
                 orderList.map((item, index) => {
                   return (
                     <View className='order_sigle' onClick={this.detailOpen.bind(this, item)}>
-                      <View className='order_one'>客户名称：{item.name}</View>
+                      <View className='order_one long_text'>客户名称：{item.agencyName}</View>
                       <View className='order_two'>
-                        <View className='order_two_date'>出厂日期：{item.date}</View>
-                        <View className='order_two_num'>{item.num}顿</View>
+                        <View className='order_two_date'>出厂日期：{item.chuchangriqi}</View>
+                        <View className='order_two_num'>{item.fahuoshuliang}顿</View>
                       </View>
-                      <View className='order_three'>{item.type}</View>
+                      <View className='order_three'>{item.baozhuangfangshi}</View>
                     </View>
                   )
                 })
@@ -81,7 +156,7 @@ export default class Order extends Component {
           ) : (
             <View className='noData'>
               <View className='noData__text'>
-                <Text>好像什么都 没有</Text>
+                <Text>{emptyTxt}</Text>
               </View>
             </View>
           )
