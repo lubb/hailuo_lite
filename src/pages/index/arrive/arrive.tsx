@@ -97,6 +97,7 @@ export default class Arrive extends Component {
         });
         ajax.postToken("/api/order/addOrderPic",data,'application/x-www-form-urlencoded', token).then(r=>{
           Taro.hideLoading();
+          Taro.setStorageSync("indexRefresh",true);
           if(r.data.bizContent == 1){
             if(that.state.current == 3){
               that.setState({
@@ -155,7 +156,7 @@ export default class Arrive extends Component {
       console.log('tempFilePaths',tempFilePaths)
       Taro.showLoading({title: '加载中',})
       Taro.uploadFile({
-        url:'http://119.23.144.116:9600/upload',
+        url:hytApi.hailuo_img_upload,
         filePath: tempFilePaths[0],
         name: 'file',
       }).then(rst=>{
@@ -178,6 +179,18 @@ export default class Arrive extends Component {
     })
   }
 
+  /**
+   * 图片预览功能
+   * @param item
+   */
+  previewImage(){
+    //图片预览
+    Taro.previewImage({
+      current: this.state.pic, // 当前显示图片的http链接
+      urls: [this.state.pic] // 需要预览的图片http链接列表
+    })
+  }
+
   render () {
     return (
       <View>
@@ -194,7 +207,7 @@ export default class Arrive extends Component {
         </View>
         {this.state.pic !==''? (<View className='img__title'>照片</View>):('')}
         {this.state.pic !== '' ? (<View className='img__choose'>
-          <Image src={this.state.pic} className='img__choose__real'/>
+          <Image src={this.state.pic} onClick={this.previewImage.bind(this)} className='img__choose__real'/>
         </View>):('')
         }
         <View className='img__title'>拍照</View>

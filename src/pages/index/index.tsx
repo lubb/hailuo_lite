@@ -14,7 +14,9 @@ export default class Index extends Component {
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
   config: Config = {
-    navigationBarTitleText: '运输中订单'
+    navigationBarTitleText: '运输中订单',
+    enablePullDownRefresh: true,
+    onReachBottomDistance: 50,
   }
 
   constructor () {
@@ -44,6 +46,7 @@ export default class Index extends Component {
 
   componentWillMount () {
     //首先获取当前用户的车俩信息
+    Taro.setStorageSync("indexRefresh",false);
     this.getCurrentCarInfo();
   }
 
@@ -52,10 +55,36 @@ export default class Index extends Component {
   componentWillUnmount () { }
 
   componentDidShow () {
-    this.getCurrentCarInfo();
+    let indexRefresh = Taro.getStorageSync("indexRefresh");
+    if(indexRefresh){
+      this.getCurrentCarInfo();
+      Taro.setStorageSync("indexRefresh",false);
+    }
   }
 
   componentDidHide () { }
+
+  /**
+   * 下拉事件
+   */
+  onPullDownRefresh(e) {
+    this.getCurrentCarInfo()
+  }
+
+  /**
+   * 图片预览功能
+   * @param item
+   */
+  previewImage(item){
+    console.log(item);
+    //图片预览
+    if(item !== '/common/images/no_img.png'){
+      Taro.previewImage({
+        current: item, // 当前显示图片的http链接
+        urls: [item] // 需要预览的图片http链接列表
+      })
+    }
+  }
 
   /**
    * 获取当前用户的车信息
@@ -293,41 +322,70 @@ export default class Index extends Component {
       (date.getDate());
   }
 
+  /**
+   * 重车拍照
+   */
   takePhoto(){
-    console.log('state',this.state);
-    Taro.navigateTo({url:'/pages/index/arrive/arrive?carId='+this.state.order.carId+'' +
-        '&orderId='+this.state.order.id+'&picType=2&picGroupOrder='+this.state.picGroupOrderHeavy+'' +
-        '&picGroup='+this.state.picGroup});
+    if(!this.state.isArr){
+      console.log('state',this.state);
+      Taro.navigateTo({url:'/pages/index/arrive/arrive?carId='+this.state.order.carId+'' +
+          '&orderId='+this.state.order.id+'&picType=2&picGroupOrder='+this.state.picGroupOrderHeavy+'' +
+          '&picGroup='+this.state.picGroup});
+    }else{
+      if(this.state.isEmp){
+        Taro.showToast({title: '请点击多点卸载再进行重车拍照', icon: 'none'})
+      }else{
+        Taro.showToast({title: '请空车拍照', icon: 'none'})
+      }
+    }
   }
 
+  /**
+   * 空车拍照
+   */
   takePhotoEmp(){
-    console.log('state',this.state);
-    Taro.navigateTo({url:'/pages/index/leave/leave?carId='+this.state.order.carId+'' +
-        '&orderId='+this.state.order.id+'&picType=3&picGroupOrder='+this.state.picGroupOrderNull+'' +
-        '&picGroup='+this.state.picGroup});
+    if(!this.state.isEmp){
+      console.log('state',this.state);
+      Taro.navigateTo({url:'/pages/index/leave/leave?carId='+this.state.order.carId+'' +
+          '&orderId='+this.state.order.id+'&picType=3&picGroupOrder='+this.state.picGroupOrderNull+'' +
+          '&picGroup='+this.state.picGroup});
+    }else{
+      if(this.state.isArr){
+        Taro.showToast({title: '请点击多点卸载再进行拍照', icon: 'none'})
+      }else{
+        Taro.showToast({title: '请重车拍照', icon: 'none'})
+      }
+    }
   }
 
+  /**
+   * 多点卸货
+   */
   upInfo(){
-    console.log('state2',this.state);
-    this.state.heavy.push({
-      pic0:this.state.defaultImg,
-      pic1:this.state.defaultImg,
-      pic2:this.state.defaultImg,
-      pic3:this.state.defaultImg
-    })
-    this.state.empty.push({
-      pic0:this.state.defaultImg,
-      pic1:this.state.defaultImg,
-      pic2:this.state.defaultImg,
-      pic3:this.state.defaultImg
-    })
-    this.setState({
-      heavy:this.state.heavy,
-      empty:this.state.empty,
-      isArr:false,
-      isEmp: true,
-      picGroup:this.state.picGroup+1
-    })
+    if(!(this.state.isArr && this.state.isEmp)){
+      Taro.showToast({title: '重车空车拍照完才可多点卸载哦!', icon: 'none'})
+    }else{
+      console.log('state2',this.state);
+      this.state.heavy.push({
+        pic0:this.state.defaultImg,
+        pic1:this.state.defaultImg,
+        pic2:this.state.defaultImg,
+        pic3:this.state.defaultImg
+      })
+      this.state.empty.push({
+        pic0:this.state.defaultImg,
+        pic1:this.state.defaultImg,
+        pic2:this.state.defaultImg,
+        pic3:this.state.defaultImg
+      })
+      this.setState({
+        heavy:this.state.heavy,
+        empty:this.state.empty,
+        isArr:false,
+        isEmp: true,
+        picGroup:this.state.picGroup+1
+      })
+    }
   }
 
   render () {
@@ -373,10 +431,10 @@ export default class Index extends Component {
             heavy.map((item, index) => {
               return (
                 <View className="zan-cell-img">
-                  <Image className='account__img' src={item.pic0} />
-                  <Image className='account__img' src={item.pic1} />
-                  <Image className='account__img' src={item.pic2} />
-                  <Image className='account__img' src={item.pic3} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic0)} src={item.pic0} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic1)} src={item.pic1} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic2)} src={item.pic2} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic3)} src={item.pic3} />
               </View>
               )
             })
@@ -386,23 +444,23 @@ export default class Index extends Component {
             empty.map((item, index) => {
               return (
                 <View className="zan-cell-img">
-                  <Image className='account__img' src={item.pic0} />
-                  <Image className='account__img' src={item.pic1} />
-                  <Image className='account__img' src={item.pic2} />
-                  <Image className='account__img' src={item.pic3} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic0)} src={item.pic0} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic1)} src={item.pic1} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic2)} src={item.pic2} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.pic3)} src={item.pic3} />
                 </View>
               )
             })
           }
           <View className="zan-panel-title">拍照上传</View>
           <View className="zan-cell-btn">
-            <Button className='account__myButton' onClick={this.takePhoto} disabled={isArr} type='primary'>重车到货</Button>
+            <Button className='account__myButton' onClick={this.takePhoto} type='primary'>重车到货</Button>
           </View>
           <View className="zan-cell-btn">
-            <Button className='account__myButton' onClick={this.takePhotoEmp} disabled={isEmp} type='primary'>空车拍照</Button>
+            <Button className='account__myButton' onClick={this.takePhotoEmp}  type='primary'>空车拍照</Button>
           </View>
           <View className="zan-cell-btn">
-            <Button className='account__myButton' onClick={this.upInfo}  disabled={!(isArr && isEmp)} type='primary'>多点卸载</Button>
+            <Button className='account__myButton' onClick={this.upInfo} type='primary'>多点卸载</Button>
           </View>
           <View className="zan-cell-btn">
             <button className='account__myButton' type='default'>订单完成</button>
