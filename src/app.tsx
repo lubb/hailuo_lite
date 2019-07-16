@@ -29,6 +29,7 @@ class App extends Component {
       'pages/order/detail',
       'pages/index/index',
       'pages/index/arrive/arrive',
+      'pages/index/leave/leave',
 
     ],
     window: {

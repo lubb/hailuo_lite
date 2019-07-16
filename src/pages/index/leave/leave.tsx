@@ -2,11 +2,11 @@ import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Image, Button  } from '@tarojs/components'
 import { AtSteps, AtIcon, AtButton} from 'taro-ui'
 import bmap from "../../../common/js/bmap-wx.min";
-import './arrive.scss'
+import './leave.scss'
 import ajax from "../../../common/js/ajax";
 import hytApi from "../../../config-server/hailuoApi";
 
-export default class Arrive extends Component {
+export default class Leave extends Component {
 
   /**
    * 指定config的类型声明为: Taro.Config
@@ -16,7 +16,7 @@ export default class Arrive extends Component {
    * 提示和声明 navigationBarTextStyle: 'black' | 'white' 类型冲突, 需要显示声明类型
    */
   config: Config = {
-    navigationBarTitleText: '重车到货'
+    navigationBarTitleText: '空车拍照'
   }
 
   constructor () {

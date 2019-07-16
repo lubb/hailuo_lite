@@ -51,7 +51,9 @@ export default class Index extends Component {
 
   componentWillUnmount () { }
 
-  componentDidShow () { }
+  componentDidShow () {
+    this.getCurrentCarInfo();
+  }
 
   componentDidHide () { }
 
@@ -300,7 +302,7 @@ export default class Index extends Component {
 
   takePhotoEmp(){
     console.log('state',this.state);
-    Taro.navigateTo({url:'/pages/index/arrive/arrive?carId='+this.state.order.carId+'' +
+    Taro.navigateTo({url:'/pages/index/leave/leave?carId='+this.state.order.carId+'' +
         '&orderId='+this.state.order.id+'&picType=3&picGroupOrder='+this.state.picGroupOrderNull+'' +
         '&picGroup='+this.state.picGroup});
   }
