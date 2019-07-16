@@ -9,23 +9,20 @@ page{
   height:110px;
   border-bottom: 1px solid #dcdcdc;
   border-top: 1px solid #dcdcdc;
-  position: relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width:100%;
 }
 
 .icon__pin{
   margin-right: 6px;
-  position: absolute;
-  top:30%;
-  left:7%;
 }
 
 .loc_detail{
   word-break:break-all;
   font-size: 26px;
   width:80%;
-  top:22%;
-  position: absolute;
-  left:13%;
 }
 
 .img__step{
@@ -90,5 +87,5 @@ page{
   display: inline-block;
   border-radius: 6px;
   font-size: 24px;
-  height:40px;
+  height:39px;
 }
