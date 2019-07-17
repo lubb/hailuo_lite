@@ -19,6 +19,7 @@ export default class Device extends Component {
   constructor () {
     super(...arguments)
     this.state = {
+      timer:'',
       latitude:'29.580554551939038',
       longitude:'111.27982597122477',
       markers: [{
@@ -38,16 +39,20 @@ export default class Device extends Component {
 
   componentWillMount () {
    this.getCurrentCarInfo();
-   this.inter_data();
   }
 
   componentDidMount () { }
 
-  componentWillUnmount () { }
+  componentWillUnmount () {
+  }
 
-  componentDidShow () { }
+  componentDidShow () {
+    this.inter_data();
+  }
 
-  componentDidHide () { }
+  componentDidHide () {
+    clearInterval(this.state.timer);
+  }
 
   dataInit(carId, token){
     let data = 'carIds='+carId;
@@ -96,10 +101,12 @@ export default class Device extends Component {
 
   inter_data(){
     let that = this;
-    setInterval(function () {
-      // console.log('执行了！')
+    let timer = setInterval(function () {
       that.getCurrentCarInfo();
     }, 10000);
+    this.setState({
+      timer:timer
+    })
   }
 
   render () {
