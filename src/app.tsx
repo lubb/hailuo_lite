@@ -22,7 +22,6 @@ class App extends Component {
    */
   config: Config = {
     pages: [
-      'pages/mine/mine',
       'pages/login/login',
       'pages/device/device',
       'pages/order/order',
@@ -33,6 +32,7 @@ class App extends Component {
       'pages/mine/about/about',
       'pages/mine/message/message',
       'pages/mine/password/password',
+      'pages/mine/mine',
     ],
     window: {
       backgroundTextStyle: 'light',

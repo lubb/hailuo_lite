@@ -99,6 +99,7 @@ export default {
       method: method,
       header: {'Authorization':'Bearer '+token,'content-type': contentType},
       success(res) {
+        debugger;
         if (res.statusCode === HTTP_STATUS.NOT_FOUND) {
           return Taro.showToast({title: '请求资源不存在', image: require('../../common/images/nonet@2x.png')});
         } else if (res.statusCode === HTTP_STATUS.BAD_GATEWAY) {
@@ -106,7 +107,12 @@ export default {
         } else if (res.statusCode === HTTP_STATUS.FORBIDDEN) {
           return Taro.showToast({title: '没有权限访问', image: require('../../common/images/nonet@2x.png')});
         } else if (res.statusCode === HTTP_STATUS.SUCCESS) {
-          return res.data;
+          if(res.data.errorCode !=='0'){
+            Taro.clearStorage();
+            Taro.navigateTo({url:'/pages/login/login'});
+          }else{
+            return res.data;
+          }
         }
       },
       error(e) {
