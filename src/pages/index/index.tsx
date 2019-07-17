@@ -47,8 +47,8 @@ export default class Index extends Component {
 
   componentWillMount () {
     //首先获取当前用户的车俩信息
+    this.indexInit();
     Taro.setStorageSync("indexRefresh",false);
-    this.getCurrentCarInfo();
   }
 
   componentDidMount () { }
@@ -64,6 +64,31 @@ export default class Index extends Component {
   }
 
   componentDidHide () { }
+
+  /**
+   *
+   * 页面初始化
+   */
+  indexInit(){
+    let token = Taro.getStorageSync('token');
+    if(token === null || token ==='' || token === undefined){
+      //表示没有登陆
+      Taro.navigateTo({url: '/pages/login/login'});
+    }else{
+      //如果存在token 需要获取当前的用户信息 判断是否token是否过期
+      ajax.postToken("/api/user/selectByUserInfo",'','application/x-www-form-urlencoded', token).then(r=>{
+        console.log('userinfo:',r);
+        if(r.data.bizContent == null){
+          //如果过期  需要将token删除 并且重新登陆
+          Taro.removeStorageSync('token');
+          Taro.navigateTo({url: '/pages/login/login'});
+        }else{
+          //此时直接跳到首页去
+          this.getCurrentCarInfo();
+        }
+      });
+    }
+  }
 
   /**
    * 下拉事件

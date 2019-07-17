@@ -387,7 +387,8 @@ export default class Detail extends Component {
             <View className="zan-cell__hd">结束时间</View>
             <View className="zan-field__input">{order.endTime == null ? '运输中...': order.endTime}</View>
           </View>
-          <View className="zan-panel-title">到货图片{optionOne?(<AtButton onClick={this.takePhoto} size='small'>拍照</AtButton>):('')}</View>
+          <View className="zan-panel-title">
+            <View class='font__img'>到货图片</View>{optionOne?(<View className='btn__imgs'><Button onClick={this.takePhoto} size='mini'>拍照</Button></View>):('已拍照')}</View>
           {
             heavy.map((item, index) => {
               return (
@@ -400,7 +401,8 @@ export default class Detail extends Component {
               )
             })
           }
-          <View className="zan-panel-title">空车图片{optionTwo?(<AtButton onClick={this.takePhotoEmp} size='small'>拍照</AtButton>):('')}</View>
+          <View className="zan-panel-title">
+            <View class='font__img'>空车图片</View>{optionTwo?(<View className='btn__imgs'><Button onClick={this.takePhotoEmp} size='mini'>拍照</Button></View>):('已拍照')}</View>
           {
             empty.map((item, index) => {
               return (
