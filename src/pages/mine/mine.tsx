@@ -1,6 +1,8 @@
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View } from '@tarojs/components'
+import {Button, View} from '@tarojs/components'
+import { AtSteps, AtIcon, AtButton} from 'taro-ui'
 import './mine.scss'
+import ajax from "../../common/js/ajax";
 
 export default class Mine extends Component {
 
@@ -18,12 +20,13 @@ export default class Mine extends Component {
   constructor () {
     super(...arguments)
     this.state = {
-      realName:'11',
-      area:'22',
+      carNumber:'',
     }
   }
 
-  componentWillMount () { }
+  componentWillMount () {
+    this.getCar();
+  }
 
   componentDidMount () { }
 
@@ -33,73 +36,94 @@ export default class Mine extends Component {
 
   componentDidHide () { }
 
+  /**
+   * 获取当前用户的车信息
+   */
+  getCar(){
+    let token = Taro.getStorageSync('token');
+    Taro.showLoading({
+      title: '加载中',
+    });
+    ajax.postToken("/api/car/driverCar",'','application/x-www-form-urlencoded', token).then(r=>{
+      let carInfo = r.data.bizContent;
+      Taro.hideLoading();
+      this.setState({
+        carNumber:carInfo.carNumber
+      })
+    });
+  }
+
+  passwordUpdate(){
+    Taro.navigateTo({url:'/pages/mine/password/password'});
+  }
+
+  message(){
+    Taro.navigateTo({url:'/pages/mine/message/message'});
+  }
+
+  openSetting(){
+    Taro.openSetting();
+  }
+
+  aboutUs(){
+    Taro.navigateTo({url:'/pages/mine/about/about'});
+  }
+
+  telPhone(){
+    Taro.makePhoneCall({
+      phoneNumber: '400-628-9998' //仅为示例，并非真实的电话号码
+    })
+  }
+
   logout(){
     Taro.clearStorageSync();
     Taro.navigateTo({url:'/pages/login/login'});
   }
 
   render () {
-    const {realName,area} = this.state;
     return (
       <View className="container">
-        <View className="zan-panel">
-          <View className="zan-cell">
-            <View className="zan-cell__bd">
-              <View className="zan-cell__text">车牌号码:
-                <text decode="true" calss="car_no">{realName}</text>
-              </View>
-              <View className="zan-cell__desc">{area}</View>
-            </View>
-            <View className="zan-cell__ft">{area}</View>
+        <View className="zan-panel" style='margin-bottom:10px;border-bottom: 1px solid gainsboro;'>
+          <View className="zan-cell zan-cell--access">
+            <View className="zan-cell__bd">车牌号:</View>
+            <View className="zan-cell__ft">{this.state.carNumber}</View>
           </View>
         </View>
-        <View className="zan-panel" catchtap='goLogin' hidden='true'>
-          <View className="zan-cell">
-            <View className="zan-cell__bd">
-              <View className="zan-cell__text">登录</View>
-              <View className="zan-cell__desc">登录以进行后续的操作</View>
-            </View>
-            <View className="zan-cell__ft">点击登录</View>
-          </View>
-        </View>
-
-        <View className="zan-panel">
-          <View className="zan-cell zan-cell--access" catchtap='goMessage'>
-            <View className="zan-cell__icon zan-icon zan-icon-chat" style="color:#38f;"></View>
+        <View className="zan-panel" style='margin-bottom:10px;border-bottom: 1px solid gainsboro;'>
+          <View className="zan-cell zan-cell--access" onClick={this.message}>
+            <AtIcon value='message' size='15' color='#38f'></AtIcon>
             <View className="zan-cell__bd">我的消息</View>
             <View className="zan-cell__ft"></View>
           </View>
-          <View className="zan-cell zan-cell--access" catchtap='changePass'>
-            <View className="zan-cell__icon zan-icon zan-icon-debit-pay" style="color:#38f;"></View>
+          <View className="zan-cell zan-cell--access" onClick={this.passwordUpdate}>
+            <AtIcon value='settings' size='15' color='#38f'></AtIcon>
             <View className="zan-cell__bd">修改密码</View>
             <View className="zan-cell__ft"></View>
           </View>
-          <View className="zan-cell zan-cell zan-cell--access" bindtap="openSetting">
-            <View className="zan-cell__icon zan-icon zan-icon-location" style="color:#38f;"></View>
+          <View className="zan-cell zan-cell--access" onClick={this.openSetting}>
+            <AtIcon value='map-pin' size='15' color='#38f'></AtIcon>
             <View className="zan-cell__bd">授权位置</View>
             <View className="zan-cell__ft"></View>
           </View>
-          <View className="zan-cell zan-cell">
-            <View className="zan-cell__icon zan-icon zan-icon-like" style="color:#38f;"></View>
+          <View className="zan-cell zan-cell--access" onClick={this.aboutUs}>
+            <AtIcon value='heart-2' size='15' color='#38f'></AtIcon>
             <View className="zan-cell__bd">关于我们</View>
             <View className="zan-cell__ft"></View>
           </View>
-          <View className="zan-cell zan-cell  zan-cell--access">
-            <View className="zan-cell__icon zan-icon zan-icon-contact" style="color:#38f;"></View>
-            <View className='zan-cell__bd'>
-              <button plain="true" className="btn-contact" open-type="contact" bindcontact="handleContact">在线客服</button>
-            </View>
+          <Button className="zan-cell2 zan-cell--access" openType='contact'>
+            <AtIcon value='user' size='15' color='#38f'></AtIcon>
+            <View className="zan-cell__bd">在线客服</View>
             <View className="zan-cell__ft"></View>
-          </View>
-          <View className="zan-cell zan-cell" bindtap='telephone'>
-            <View className="zan-cell__icon zan-icon zan-icon-phone" style="color:#38f;"></View>
-            <View className="zan-cell__bd">服务电话：400-628-9998</View>
-            <View className="zan-cell__ft"></View>
+          </Button>
+          <View className="zan-cell zan-cell--access" onClick={this.telPhone} style='border-top: 0'>
+            <AtIcon value='phone' size='15' color='#38f'></AtIcon>
+            <View className="zan-cell__bd">服务电话：</View>
+            <View className="zan-cell__ft">400-628-9998</View>
           </View>
         </View>
-        <View className="zan-panel">
+        <View className="zan-panel" style='border-bottom: 1px solid gainsboro;'>
           <View className="zan-cell">
-            <View onClick={this.logout} className="zan-cell__bd zan-c-red zan-center">退出登录</View>
+            <View onClick={this.logout} className="zan-cell__bd2 zan-c-red zan-center">退出登录</View>
           </View>
         </View>
       </View>

@@ -22,15 +22,17 @@ class App extends Component {
    */
   config: Config = {
     pages: [
-      'pages/login/login',
       'pages/mine/mine',
+      'pages/login/login',
       'pages/device/device',
       'pages/order/order',
       'pages/order/detail',
       'pages/index/index',
       'pages/index/arrive/arrive',
       'pages/index/leave/leave',
-
+      'pages/mine/about/about',
+      'pages/mine/message/message',
+      'pages/mine/password/password',
     ],
     window: {
       backgroundTextStyle: 'light',
