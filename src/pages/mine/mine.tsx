@@ -21,6 +21,8 @@ export default class Mine extends Component {
     super(...arguments)
     this.state = {
       carNumber:'',
+      date:'',
+      color:false,
     }
   }
 
@@ -46,9 +48,18 @@ export default class Mine extends Component {
     });
     ajax.postToken("/api/car/driverCar",'','application/x-www-form-urlencoded', token).then(r=>{
       let carInfo = r.data.bizContent;
+      var date1 = new Date(carInfo.platformEndDate.replace(/-/g, "/"));
+      let now = new Date();
+      let color = false;
+      var days = (date1.getTime()-now.getTime()) / (1000 * 60 * 60 * 24);
+      if(days > 31){
+        color=true;
+      }
       Taro.hideLoading();
       this.setState({
-        carNumber:carInfo.carNumber
+        carNumber:carInfo.carNumber,
+        date:carInfo.platformEndDate,
+        color:color
       })
     });
   }
@@ -83,11 +94,9 @@ export default class Mine extends Component {
   render () {
     return (
       <View className="container">
-        <View className="zan-panel" style='margin-bottom:10px;border-bottom: 1px solid gainsboro;'>
-          <View className="zan-cell zan-cell--access">
-            <View className="zan-cell__bd">车牌号:</View>
-            <View className="zan-cell__ft">{this.state.carNumber}</View>
-          </View>
+        <View className="zan-panel2" style='margin-bottom:10px;border-bottom: 1px solid gainsboro;'>
+            <View className="zan-cell__bd1">车牌号:{this.state.carNumber}</View>
+            <View className="zan-cell__ft1" style={this.state.color?'color:black;':'color:red;'}>(到期时间:{this.state.date})</View>
         </View>
         <View className="zan-panel" style='margin-bottom:10px;border-bottom: 1px solid gainsboro;'>
           <View className="zan-cell zan-cell--access" onClick={this.message}>
@@ -122,7 +131,7 @@ export default class Mine extends Component {
           </View>
         </View>
         <View className="zan-panel" style='border-bottom: 1px solid gainsboro;'>
-          <View className="zan-cell">
+          <View className="zan-cell3">
             <View onClick={this.logout} className="zan-cell__bd2 zan-c-red zan-center">退出登录</View>
           </View>
         </View>
