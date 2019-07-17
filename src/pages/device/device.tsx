@@ -29,7 +29,7 @@ export default class Device extends Component {
         longitude: '111.27982597122477',
         title: '安徽中凯信息股份有限公司',
         callout: {
-          content: '湘J68035' + '\n' + 'GPS状态：离线\n' + '载重：XX顿\n速度：0',
+          content: '湘J68035' + '\n' + 'GPS状态：离线\n' + '载重：xx吨\n速度：0',
           display: 'ALWAYS',
           padding: 10
         }
@@ -72,7 +72,7 @@ export default class Device extends Component {
             longitude: d_.lat,
             title: '安徽中凯信息股份有限公司',
             callout: {
-              content: d_.carNumber + '\n' + 'GPS状态：'+(d_.gpsType===1?'在线':'静止中')+'\n' + '载重：'+d_.weight+'顿\n速度：'+d_.speed,
+              content: d_.carNumber + '\n' + 'GPS状态：'+(d_.gpsType===1?'在线':'静止中')+'\n' + '载重：'+d_.weight+'吨\n速度：'+d_.speed,
               display: 'ALWAYS',
               padding: 10
             }

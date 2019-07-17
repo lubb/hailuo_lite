@@ -145,7 +145,7 @@ export default class Order extends Component {
                       <View className='order_one long_text'>客户名称：{item.agencyName}</View>
                       <View className='order_two'>
                         <View className='order_two_date'>出厂日期：{item.chuchangriqi}</View>
-                        <View className='order_two_num'>{item.fahuoshuliang}顿</View>
+                        <View className='order_two_num'>{item.fahuoshuliang}吨</View>
                       </View>
                       <View className='order_three'>{item.baozhuangfangshi}</View>
                     </View>
