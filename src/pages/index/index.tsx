@@ -180,7 +180,6 @@ export default class Index extends Component {
            listShow:false
          })
        }
-       Taro.hideLoading();
      });
   }
 
@@ -190,6 +189,7 @@ export default class Index extends Component {
   getPic(orderId, token){
     let data = 'orderId='+orderId;
     ajax.postToken("/api/order/listOrderPic",data,'application/x-www-form-urlencoded', token).then(r=>{
+      Taro.hideLoading();
       let d = r.data.bizContent;
       let heavy = [];
       let empty = [];
