@@ -28,6 +28,7 @@ export default class Index extends Component {
       isArr: true,
       isEmp: true,
       picGroup:1,
+      data:[],
       picGroupOrderHeavy:1,
       picGroupOrderNull:1,
       heavy:[{
@@ -123,6 +124,7 @@ export default class Index extends Component {
       isArr: true,
       isEmp: true,
       picGroup:1,
+      data:[],
       picGroupOrderHeavy:1,
       picGroupOrderNull:1,
       heavy:[{
@@ -189,6 +191,8 @@ export default class Index extends Component {
     let data = 'orderId='+orderId;
     ajax.postToken("/api/order/listOrderPic",data,'application/x-www-form-urlencoded', token).then(r=>{
       let d = r.data.bizContent;
+      let heavy = [];
+      let empty = [];
       if(d!=null && d.length>0){
         let flagHeavy = true;
         let numHeavy =0;
@@ -213,13 +217,14 @@ export default class Index extends Component {
           flagHeavy = h.flag;
           numHeavy = h.num;
           picGroupOrderHeavy = h.picGroupOrder;
+          heavy = h.data;
           this.setState({
-            heavy:h.data,
             isArr:flagHeavy,
             picGroup:numHeavy,
             picGroupOrderHeavy:picGroupOrderHeavy
           })
         }else{
+          heavy = this.state.heavy;
           this.setState({
             isArr:false
           })
@@ -231,7 +236,6 @@ export default class Index extends Component {
           picGroupOrderNull = n.picGroupOrder;
           if(numHeavy == numNull){
             this.setState({
-              empty:n.data,
               isEmp:flagHeavy?(flagNull?true:false):true,
               picGroupOrderNull:picGroupOrderNull
             })
@@ -244,23 +248,42 @@ export default class Index extends Component {
               pic3:this.state.defaultImg
             })
             this.setState({
-              empty:n.data,
               isEmp:flagHeavy?false:true,
               picGroupOrderNull:picGroupOrderNull
             })
           }
+          empty = n.data;
         }else{
+          empty = this.state.empty;
           this.setState({
             isEmp:flagHeavy?false:true
           })
         }
       }else{
+        empty = this.state.empty;
         this.setState({
           isArr:false,
           isEmp:true,
         })
       }
+      console.log(heavy);
+      console.log(empty);
+      let result = this.dataDeal(heavy,empty);
+      console.log(result);
+      this.setState({data: result});
     });
+  }
+
+  dataDeal(heavy,empty){
+    let data =[];
+    heavy.forEach((element,index)=>{
+      let json = {};
+      json.group = index+1;
+      json.heavy = element;
+      json.empty = empty[index];
+      data.push(json);
+    })
+    return data;
   }
 
   /**
@@ -425,22 +448,22 @@ export default class Index extends Component {
     if(!(this.state.isArr && this.state.isEmp)){
       Taro.showToast({title: '重车空车拍照完才可多点卸载哦!', icon: 'none'})
     }else{
-      console.log('state2',this.state);
-      this.state.heavy.push({
-        pic0:this.state.defaultImg,
-        pic1:this.state.defaultImg,
-        pic2:this.state.defaultImg,
-        pic3:this.state.defaultImg
-      })
-      this.state.empty.push({
-        pic0:this.state.defaultImg,
-        pic1:this.state.defaultImg,
-        pic2:this.state.defaultImg,
-        pic3:this.state.defaultImg
+      this.state.data.push({
+        heavy:{
+          pic0:this.state.defaultImg,
+          pic1:this.state.defaultImg,
+          pic2:this.state.defaultImg,
+          pic3:this.state.defaultImg
+        },
+        empty:{
+          pic0:this.state.defaultImg,
+          pic1:this.state.defaultImg,
+          pic2:this.state.defaultImg,
+          pic3:this.state.defaultImg
+        },
+        group:this.state.picGroup+1
       })
       this.setState({
-        heavy:this.state.heavy,
-        empty:this.state.empty,
         isArr:false,
         isEmp: true,
         picGroup:this.state.picGroup+1
@@ -470,7 +493,7 @@ export default class Index extends Component {
   }
 
   render () {
-    let{order,heavy,empty,isArr,isEmp,listShow}= this.state;
+    let{order,heavy,empty,isArr,isEmp,listShow, data}= this.state;
     return (
       <View className="container">
       { listShow ?
@@ -509,45 +532,39 @@ export default class Index extends Component {
           <View className="zan-cell__hd">结束时间</View>
           <View className="zan-field__input">{order.endTime == null ? '运输中...': order.endTime}</View>
         </View>
-        <View className="zan-panel-title">到货图片</View>
+
         {
-          heavy.map((item, index) => {
+          data.map((item, index) => {
             return (
-              <View className="zan-cell-img">
-                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic0)} src={item.pic0} />
-                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic1)} src={item.pic1} />
-                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic2)} src={item.pic2} />
-                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic3)} src={item.pic3} />
-              </View>
-            )
-          })
-        }
-        <View className="zan-panel-title">空车图片</View>
-        {
-          empty.map((item, index) => {
-            return (
-              <View className="zan-cell-img">
-                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic0)} src={item.pic0} />
-                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic1)} src={item.pic1} />
-                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic2)} src={item.pic2} />
-                <Image className='account__img' onClick={this.previewImage.bind(this,item.pic3)} src={item.pic3} />
+              <View>
+                <View className="zan-panel-title">到货图片</View>
+                <View className="zan-cell-img">
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.heavy.pic0)} src={item.heavy.pic0} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.heavy.pic1)} src={item.heavy.pic1} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.heavy.pic2)} src={item.heavy.pic2} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.heavy.pic3)} src={item.heavy.pic3} />
+                </View>
+                <View className="zan-panel-title">空车图片</View>
+                <View className="zan-cell-img">
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.empty.pic0)} src={item.empty.pic0} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.empty.pic1)} src={item.empty.pic1} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.empty.pic2)} src={item.empty.pic2} />
+                  <Image className='account__img' onClick={this.previewImage.bind(this,item.empty.pic3)} src={item.empty.pic3} />
+                </View>
               </View>
             )
           })
         }
         <View className="zan-panel-title">拍照上传</View>
         <View className="zan-cell-btn">
-          <Button className='account__myButton' onClick={this.takePhoto} type='primary'>重车到货</Button>
+          <Button className='account__myButton' onClick={this.takePhoto} disabled={isArr} type='primary'>重车到货</Button>
+          <Button className='account__myButton' onClick={this.takePhotoEmp} disabled={isEmp}  type='primary'>空车拍照</Button>
         </View>
         <View className="zan-cell-btn">
-          <Button className='account__myButton' onClick={this.takePhotoEmp}  type='primary'>空车拍照</Button>
-        </View>
-        <View className="zan-cell-btn">
-          <Button className='account__myButton' onClick={this.upInfo} type='primary'>多点卸载</Button>
-        </View>
-        <View className="zan-cell-btn">
+          <Button className='account__myButton' disabled={!(isArr && isEmp)} onClick={this.upInfo} type='primary'>多点卸载</Button>
           <Button className='account__myButton' onClick={this.endOrder} type='default'>订单完成</Button>
         </View>
+
       </View>
       )
         : '暂无运输中订单'
