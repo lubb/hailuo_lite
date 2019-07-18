@@ -171,6 +171,13 @@ export default class Arrive extends Component {
         url:hytApi.hailuo_img_upload,
         filePath: tempFilePaths[0],
         name: 'file',
+        formData: {
+          'showTime': 'true',
+          'text':that.state.loc,
+          'color':'#FF0000',
+          'size':'28',
+          'position':'50,100'
+        },
       }).then(rst=>{
         Taro.hideLoading()
         console.log('图片上传结果===>',rst)

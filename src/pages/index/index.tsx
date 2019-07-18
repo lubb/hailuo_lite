@@ -260,6 +260,7 @@ export default class Index extends Component {
           })
         }
       }else{
+        heavy = this.state.heavy;
         empty = this.state.empty;
         this.setState({
           isArr:false,
