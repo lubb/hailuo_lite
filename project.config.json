@@ -4,7 +4,7 @@
 	"description": "海螺流向小程序",
 	"appid": "wx55d3f914106096d8",
 	"setting": {
-		"urlCheck": false,
+		"urlCheck": true,
 		"es6": false,
 		"postcss": false,
 		"minified": false,
