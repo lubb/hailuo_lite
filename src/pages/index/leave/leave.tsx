@@ -54,7 +54,7 @@ export default class Leave extends Component {
   componentWillMount () {
     var _this = this;
     var BMap = new bmap.BMapWX({
-      ak: 'UKWEehRX37kF537PUAHXoBKGlSvqnqvl'
+      ak: 'stzFxy6GV45weSw89of3UFhIRUvEKIOn'
     });
     var fail = function (data) {
        console.log('1',data)
