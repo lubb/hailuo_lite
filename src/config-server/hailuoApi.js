@@ -12,7 +12,7 @@ const UrlConstantsUat = {
   hailuo_service_path: 'https://api.hailuo.ah-zk.com',
   hailuo_img_path:'http://img.hailuo.ah-zk.com',
   hailuo_img_upload:'https://fs.hailuo.ah-zk.com/upload',
-  appId: 'wx55d3f914106096d8',
+  appId: 'wx39105ea8a74c5c6c',
 }
 
 
@@ -24,7 +24,7 @@ const UrlConstantsProd = {
   hailuo_service_path: 'http://119.23.144.116:9720',
   hailuo_img_path:'http://119.23.144.116:9610',
   hailuo_img_upload:'http://119.23.144.116:9600/upload',
-  appId: 'wx55d3f914106096d8',
+  appId: 'wx39105ea8a74c5c6c',
 }
 
 

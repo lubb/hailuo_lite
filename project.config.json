@@ -2,7 +2,7 @@
 	"miniprogramRoot": "dist/",
 	"projectname": "hailuo_lite",
 	"description": "海螺流向小程序",
-	"appid": "wx55d3f914106096d8",
+	"appid": "wx39105ea8a74c5c6c",
 	"setting": {
 		"urlCheck": true,
 		"es6": false,
