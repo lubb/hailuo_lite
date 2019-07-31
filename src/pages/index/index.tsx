@@ -564,7 +564,7 @@ export default class Index extends Component {
         </View>
         <View className="zan-cell-btn">
           <Button className='account__myButton' disabled={!(isArr && isEmp)} onClick={this.upInfo} type='primary'>多点卸载</Button>
-          <Button className='account__myButton' onClick={this.endOrder} type='default'>订单完成</Button>
+          <Button className='account__myButton' onClick={this.endOrder} disabled={!(isArr && isEmp)} type='primary'>订单完成</Button>
         </View>
 
       </View>
