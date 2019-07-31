@@ -169,7 +169,7 @@ export default class Index extends Component {
     let data = 'status=0&carId='+userId+'&starTime='+date;
      ajax.postToken("/api/order/carOrderList",data,'application/x-www-form-urlencoded', token).then(r=>{
        console.log(r);
-       if(r){
+       if(r && r.data.bizContent.records.length>0){
          this.setState({
            listShow:true,
            order:r.data.bizContent.records[0]
@@ -179,6 +179,7 @@ export default class Index extends Component {
          this.setState({
            listShow:false
          })
+         Taro.hideLoading();
        }
      });
   }

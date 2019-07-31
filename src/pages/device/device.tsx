@@ -63,13 +63,13 @@ export default class Device extends Component {
       if(d && d.length>0){
         let d_ = d[0];
         this.setState({
-          latitude: d_.lon,
-          longitude:d_.lat,
+          latitude: d_.lat,
+          longitude:d_.lon,
           markers: [{
             id: 0,
             iconPath: require("./../../common/images/track.png"),
-            latitude: d_.lon,
-            longitude: d_.lat,
+            latitude: d_.lat,
+            longitude: d_.lon,
             title: '安徽中凯信息股份有限公司',
             callout: {
               content: d_.carNumber + '\n' + 'GPS状态：'+(d_.gpsType===1?'在线':'静止中')+'\n' + '载重：'+d_.weight+'吨\n速度：'+d_.speed,
