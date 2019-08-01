@@ -1,7 +1,7 @@
 import Taro, { Component, Config } from '@tarojs/taro'
 import { View, Image, Button  } from '@tarojs/components'
-import { AtSteps, AtIcon, AtButton} from 'taro-ui'
-import bmap from "../../../common/js/bmap-wx.min";
+import { AtSteps, AtIcon, AtButton, AtModal} from 'taro-ui'
+import bmap from "../../../libs/bmap-wx.min";
 import './arrive.scss'
 import ajax from "../../../common/js/ajax";
 import hytApi from "../../../config-server/hailuoApi";
@@ -22,6 +22,7 @@ export default class Arrive extends Component {
   constructor () {
     super(...arguments)
     this.state = {
+      isOpen:true,
       carId:this.$router.params.carId,
       orderId:this.$router.params.orderId,
       current: this.$router.params.picGroupOrder-1,
@@ -52,23 +53,7 @@ export default class Arrive extends Component {
   }
 
   componentWillMount () {
-    var _this = this;
-    var BMap = new bmap.BMapWX({
-      ak: 'stzFxy6GV45weSw89of3UFhIRUvEKIOn'
-    });
-    var fail = function (data) {
-       console.log('1',data)
-     };
-     var success = function (data) {
-       var locstr = data.wxMarkerData[0].address + data.wxMarkerData[0].desc + data.wxMarkerData[0].business;
-       _this.setState({
-         loc: locstr
-       })
-     }
-     BMap.regeocoding({
-       fail: fail,
-       success: success
-     })
+    this.locationLoad();
   }
 
   componentDidMount () { }
@@ -82,51 +67,75 @@ export default class Arrive extends Component {
   onChange (current) {
   }
 
+  locationLoad(){
+    var _this = this;
+    var BMap = new bmap.BMapWX({
+      ak: 'stzFxy6GV45weSw89of3UFhIRUvEKIOn'
+    });
+    var fail = function (data) {
+      console.log('1',data)
+    };
+    var success = function (data) {
+      var locstr = data.wxMarkerData[0].address + data.wxMarkerData[0].desc + data.wxMarkerData[0].business;
+      _this.setState({
+        loc: locstr
+      })
+    }
+    BMap.regeocoding({
+      fail: fail,
+      success: success
+    })
+  }
+
   /**
    * 下一步
    */
   uploadPic(){
     let  that = this;
-    Taro.getLocation({
-      type: 'wgs84',
-      success(res) {
-        console.log(res);
-        let token = Taro.getStorageSync('token');
-        console.log(that.state);
-        let data = 'carId='+that.state.carId+'&orderId='+that.state.orderId+'&phoneLat='+res.latitude+'&phoneLon='+res.longitude+'&phoneSendTime='+that.getTimeFormat()+'&pic='+that.state.code+'&picGroup='+that.state.picGroup+'&picGroupOrder='+that.state.picGroupOrder+'&picType='+that.state.picType;
-        console.log(data);
-        Taro.showLoading({
-          title: '加载中',
-        });
-        ajax.postToken("/api/order/addOrderPic",data,'application/x-www-form-urlencoded', token).then(r=>{
-          Taro.hideLoading();
-          Taro.setStorageSync("indexRefresh",true);
-          if(r.data.bizContent == 1){
-            if(that.state.current == 3){
-              that.setState({
-                current:0,
-                pic:'',
-                code:'',
-                picGroupOrder:1
-              })
-              Taro.switchTab({url:'/pages/index/index'});
+    if(that.state.code!==''){
+      Taro.getLocation({
+        type: 'wgs84',
+        success(res) {
+          console.log(res);
+          let token = Taro.getStorageSync('token');
+          console.log(that.state);
+          let data = 'carId='+that.state.carId+'&orderId='+that.state.orderId+'&phoneLat='+res.latitude+'&phoneLon='+res.longitude+'&phoneSendTime='+that.getTimeFormat()+'&pic='+that.state.code+'&picGroup='+that.state.picGroup+'&picGroupOrder='+that.state.picGroupOrder+'&picType='+that.state.picType;
+          console.log(data);
+          Taro.showLoading({
+            title: '加载中',
+          });
+          ajax.postToken("/api/order/addOrderPic",data,'application/x-www-form-urlencoded', token).then(r=>{
+            Taro.hideLoading();
+            Taro.setStorageSync("indexRefresh",true);
+            if(r.data.bizContent == 1){
+              if(that.state.current == 3){
+                that.setState({
+                  current:0,
+                  pic:'',
+                  code:'',
+                  picGroupOrder:1
+                })
+                Taro.switchTab({url:'/pages/index/index'});
+              }else{
+                that.setState({
+                  current:that.state.current+1,
+                  pic:'',
+                  code:'',
+                  picGroupOrder:parseInt(that.state.picGroupOrder)+1
+                })
+              }
             }else{
-              that.setState({
-                current:that.state.current+1,
-                pic:'',
-                code:'',
-                picGroupOrder:parseInt(that.state.picGroupOrder)+1
-              })
+              Taro.showToast({title: '保存图片失败，请重试', icon: 'none'})
             }
-          }else{
-            Taro.showToast({title: '保存图片失败，请重试', icon: 'none'})
-          }
-        });
-      },
-      fail(res){
-        Taro.showToast({title: '获取位置失败，请打开手机的GPS', icon: 'none'})
-      }
-    })
+          });
+        },
+        fail(res){
+          Taro.showToast({title: '获取位置失败，请打开手机的GPS', icon: 'none'})
+        }
+      })
+    }else{
+      Taro.showToast({title: '请先上传图片', icon: 'none'})
+    }
   }
 
   /**
@@ -210,12 +219,22 @@ export default class Arrive extends Component {
     })
   }
 
+  onPositionRefresh(){
+    this.locationLoad();
+  }
+
+  handleConfirm(){
+    this.setState({
+      isOpen:false
+    })
+  }
+
   render () {
     return (
       <View>
         <View className='img__position'>
           <View className='icon__pin'><AtIcon value='map-pin' size='20' color='#3d84e0'></AtIcon></View>
-          <View className='loc_detail'>{this.state.loc}<View className='position__btn'>刷新位置</View></View>
+          <View className='loc_detail'>{this.state.loc}<View className='position__btn' onClick={this.onPositionRefresh}>刷新位置</View></View>
         </View>
         <View className='img__step'>
           <AtSteps
@@ -238,6 +257,14 @@ export default class Arrive extends Component {
         <View className='img_btn'>
           <Button className='img_btn_btn' type='primary' onClick={this.uploadPic}>下一步</Button>
         </View>
+
+        <AtModal
+          isOpened ={this.state.isOpen}
+          title='提示'
+          confirmText='确认'
+          onConfirm={ this.handleConfirm }
+          content='拍照前请确认上方位置信息如与实际位置不符,请点击刷新位置按钮'
+        />
       </View>
     )
   }

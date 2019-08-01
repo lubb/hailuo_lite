@@ -87,11 +87,15 @@ export default class Login extends Component {
 
   userLogin(){
     let that =this;
+    Taro.showLoading({
+      title: '登录中',
+    });
     let params = 'grant_type=user_token&loginName='+that.state.loginName+'&password='+that.state.password;
     ajax.postLogin("/oauth/token",params,'application/x-www-form-urlencoded').then(res=>{
       //此处需要做判断
       //1、判断res是否不存在账户 2、判断是否密码错误
       console.log(res);
+      Taro.hideLoading();
       if(res.data.access_token!==undefined){
         Taro.setStorageSync('token', res.data.access_token);
         Taro.switchTab({url: '/pages/index/index'});
