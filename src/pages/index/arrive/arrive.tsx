@@ -263,7 +263,7 @@ export default class Arrive extends Component {
           title='提示'
           confirmText='确认'
           onConfirm={ this.handleConfirm }
-          content='拍照前请确认上方位置信息如与实际位置不符,请点击刷新位置按钮'
+          content='拍照前请确认上方位置信息,如与实际位置不符,请点击刷新位置按钮'
         />
       </View>
     )
